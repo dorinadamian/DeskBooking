@@ -1,5 +1,3 @@
--- SOURCE C:/Proiect/DeskBookingApp/desk_booking.sql;
-
 /*#############################################################*/
 /*        PARTEA 1 - STERGEREA SI RECREAREA BAZEI DE DATE      */
 DROP DATABASE deskBookingDB;
@@ -75,7 +73,7 @@ BEGIN
         SUBSTRING('!@#$%^&*', FLOOR(1 + (RAND() * 8)), 1)
     );
 
-    -- Inserăm un nou cont pentru angajat cu parola generată
+    -- Inserăm contul asociat noului angajat
     INSERT INTO tblCont(email, parola, rol, angajat) VALUES
         (email_generat, parola_generata, 'USER', NEW.idAngajat);
 END;
