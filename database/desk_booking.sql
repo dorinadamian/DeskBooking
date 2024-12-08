@@ -1,90 +1,91 @@
+-- SOURCE C:/Proiect/DeskBookingApp/DeskBooking/desk_booking.sql;
+
 /*#############################################################*/
-/*        PARTEA 1 - STERGEREA SI RECREAREA BAZEI DE DATE      */
+/*        PART 1 - DROPPING AND RECREATING THE DATABASE        */
 DROP DATABASE deskBookingDB;
 CREATE DATABASE deskBookingDB;
 USE deskBookingDB;
 /*#############################################################*/
 
 
-
 /*#############################################################*/
-/*                  PARTEA 2 - CREAREA TABELELOR              */
+/*                 PART 2 - CREATING THE TABLES                */
 
 
-CREATE TABLE tblDepartament(
-	idDepartament INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	departament VARCHAR(100) NOT NULL
+CREATE TABLE tblDepartment(
+    idDepartment INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    department VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE tblAngajat(
-	idAngajat INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nume VARCHAR(50) NOT NULL,
-    prenume VARCHAR(50) NOT NULL,
-    functia ENUM ('MANAGER', 'SUBORDONAT') NOT NULL,
-    departament INT NULL,
-    CONSTRAINT fk_departament FOREIGN KEY(departament)
-        REFERENCES tblDepartament(idDepartament) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE tblEmployee(
+    idEmployee INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    lastName VARCHAR(50) NOT NULL,
+    firstName VARCHAR(50) NOT NULL,
+    role ENUM ('Manager', 'Employee') NOT NULL,
+    department INT NULL,
+    CONSTRAINT fk_department FOREIGN KEY(department)
+        REFERENCES tblDepartment(idDepartment) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE tblCont(
-	idCont INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	email VARCHAR(120) NULL,
-    parola VARCHAR(50) NULL,
-    rol ENUM ('USER', 'ADMIN') NOT NULL,
-    angajat INT NULL,
-    CONSTRAINT fk_angajat FOREIGN KEY(angajat)
-		REFERENCES tblAngajat(idAngajat) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE tblAccount(
+    idAccount INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(120) NULL,
+    password VARCHAR(50) NULL,
+    role ENUM ('User', 'Admin') NOT NULL,
+    employee INT NULL,
+    CONSTRAINT fk_employee FOREIGN KEY(employee)
+        REFERENCES tblEmployee(idEmployee) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE tblBirou(
-	idBirou INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    disponibilitate ENUM ('LIBER', 'OCUPAT') NOT NULL
+CREATE TABLE tblDesk(
+    idDesk INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    availability ENUM ('Free', 'Busy') NOT NULL
 );
 
-CREATE TABLE tblRezervare(
-	idRezervare INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    dataRezervare DATE NOT NULL,
-    oraInceput TIME NOT NULL,
-    oraSfarsit TIME NOT NULL,
-    angajat INT NOT NULL,
-    birou INT NOT NULL,
-    CONSTRAINT fk_angajat_rezervare FOREIGN KEY(angajat) 
-		REFERENCES tblAngajat(idAngajat) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fk_birou_rezervare FOREIGN KEY(birou) 
-		REFERENCES tblBirou(idBirou) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE tblBooking(
+    idBooking INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    bookingDate DATE NOT NULL,
+    startTime TIME NOT NULL,
+    endTime TIME NOT NULL,
+    employee INT NOT NULL,
+    desk INT NOT NULL,
+    CONSTRAINT fk_employee_booking FOREIGN KEY(employee) 
+        REFERENCES tblEmployee(idEmployee) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_desk_booking FOREIGN KEY(desk) 
+        REFERENCES tblDesk(idDesk) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 /*#############################################################*/
 
 DELIMITER //
-CREATE TRIGGER ai_generare_email_pass AFTER INSERT ON tblAngajat
+CREATE TRIGGER ai_generate_email_pass AFTER INSERT ON tblEmployee
 FOR EACH ROW
 BEGIN
-    DECLARE email_generat TEXT;
-    DECLARE parola_generata VARCHAR(16);
+    DECLARE generated_email TEXT;
+    DECLARE generated_password VARCHAR(16);
 
-    -- Generare email
-    SET email_generat = CONCAT(LOWER(NEW.prenume), '.', LOWER(NEW.nume), '@myfirm.com');
+    -- Generate email
+    SET generated_email = CONCAT(LOWER(NEW.firstName), '.', LOWER(NEW.lastName), '@myfirm.com');
 
-    -- Generare parola unica
-    SET parola_generata = CONCAT(
-        UPPER(NEW.nume),
+    -- Generate unique password
+    SET generated_password = CONCAT(
+        UPPER(NEW.lastName),
         '123',
         SUBSTRING('!@#$%^&*', FLOOR(1 + (RAND() * 8)), 1)
     );
 
-    -- Inserăm contul asociat noului angajat
-    INSERT INTO tblCont(email, parola, rol, angajat) VALUES
-        (email_generat, parola_generata, 'USER', NEW.idAngajat);
+    -- Insert the associated account for the new employee
+    INSERT INTO tblAccount(email, password, role, employee) VALUES
+        (generated_email, generated_password, 'User', NEW.idEmployee);
 END;
 //
 
-CREATE PROCEDURE InsertBirouri()
+CREATE PROCEDURE InsertDesks()
 BEGIN
     DECLARE i INT DEFAULT 1;
 
     WHILE i <= 50 DO
-        INSERT INTO tblBirou(disponibilitate) VALUES('LIBER');
+        INSERT INTO tblDesk(availability) VALUES('FREE');
         SET i = i + 1;
     END WHILE;
 END;
@@ -93,69 +94,69 @@ END;
 DELIMITER ;
 
 
-INSERT INTO tblDepartament (departament) VALUES 
+INSERT INTO tblDepartment (department) VALUES 
     ('HR'),
-    ('Vanzari'),
+    ('Sales'),
     ('Project Management'),
     ('Quality Assurance'),
     ('Software Development'),
     ('IT Support'),
     ('DevOps');
 
-INSERT INTO tblAngajat (nume, prenume, functia, departament) VALUES
+INSERT INTO tblEmployee (lastName, firstName, role, department) VALUES
     -- HR
-    ('Popescu', 'Andreea', 'MANAGER', 1),
-    ('Ionescu', 'Daniel', 'SUBORDONAT', 1),
-    ('Georgescu', 'Elena', 'SUBORDONAT', 1),
-    ('Dumitru', 'Alexandra', 'SUBORDONAT', 1),
+    ('Popescu', 'Andreea', 'Manager', 1),
+    ('Ionescu', 'Daniel', 'Employee', 1),
+    ('Georgescu', 'Elena', 'Employee', 1),
+    ('Dumitru', 'Alexandra', 'Employee', 1),
 
-    -- Vanzari
-    ('Vasilescu', 'Radu', 'MANAGER', 2),
-    ('Stan', 'Mihai', 'SUBORDONAT', 2),
-    ('Tudor', 'Florin', 'SUBORDONAT', 2),
-    ('Petrescu', 'Cristina', 'SUBORDONAT', 2),
-    ('Marinescu', 'Adrian', 'SUBORDONAT', 2),
+    -- Sales
+    ('Vasilescu', 'Radu', 'Manager', 2),
+    ('Stan', 'Mihai', 'Employee', 2),
+    ('Tudor', 'Florin', 'Employee', 2),
+    ('Petrescu', 'Cristina', 'Employee', 2),
+    ('Marinescu', 'Adrian', 'Employee', 2),
 
     -- Project Management
-    ('Radulescu', 'Diana', 'MANAGER', 3),
-    ('Iliescu', 'John', 'SUBORDONAT', 3),
-    ('Moraru', 'Sarah', 'SUBORDONAT', 3),
-    ('Stefan', 'Madalina', 'SUBORDONAT', 3),
-    ('Enache', 'George', 'SUBORDONAT', 3),
+    ('Radulescu', 'Diana', 'Manager', 3),
+    ('Iliescu', 'John', 'Employee', 3),
+    ('Moraru', 'Sarah', 'Employee', 3),
+    ('Stefan', 'Madalina', 'Employee', 3),
+    ('Enache', 'George', 'Employee', 3),
 
     -- Quality Assurance
-    ('Dragomir', 'Ioana', 'MANAGER', 4),
-    ('Voinea', 'Emma', 'SUBORDONAT', 4),
-    ('Mihalache', 'James', 'SUBORDONAT', 4),
-    ('Filip', 'Maria', 'SUBORDONAT', 4),
-    ('Stanciu', 'Victor', 'SUBORDONAT', 4),
-    ('Gheorghe', 'Elisabeth', 'SUBORDONAT', 4),
-    ('Andrei', 'Michael', 'SUBORDONAT', 4),
-    ('Barbu', 'Amelia', 'SUBORDONAT', 4),
-    ('Chirila', 'Robert', 'SUBORDONAT', 4),
+    ('Dragomir', 'Ioana', 'Manager', 4),
+    ('Voinea', 'Emma', 'Employee', 4),
+    ('Mihalache', 'James', 'Employee', 4),
+    ('Filip', 'Maria', 'Employee', 4),
+    ('Stanciu', 'Victor', 'Employee', 4),
+    ('Gheorghe', 'Elisabeth', 'Employee', 4),
+    ('Andrei', 'Michael', 'Employee', 4),
+    ('Barbu', 'Amelia', 'Employee', 4),
+    ('Chirila', 'Robert', 'Employee', 4),
 
     -- Software Development
-    ('Stefanescu', 'Ioan', 'MANAGER', 5),
-    ('Neagu', 'Chris', 'SUBORDONAT', 5),
-    ('Dima', 'Luca', 'SUBORDONAT', 5),
-    ('Pavel', 'Sophia', 'SUBORDONAT', 5),
-    ('Costache', 'Daniela', 'SUBORDONAT', 5),
-    ('Roman', 'David', 'SUBORDONAT', 5),
-    ('Alexandru', 'Gabriela', 'SUBORDONAT', 5),
+    ('Stefanescu', 'Ioan', 'Manager', 5),
+    ('Neagu', 'Chris', 'Employee', 5),
+    ('Dima', 'Luca', 'Employee', 5),
+    ('Pavel', 'Sophia', 'Employee', 5),
+    ('Costache', 'Daniela', 'Employee', 5),
+    ('Roman', 'David', 'Employee', 5),
+    ('Alexandru', 'Gabriela', 'Employee', 5),
 
     -- IT Support
-    ('Gherasim', 'Alex', 'MANAGER', 6),
-    ('Marin', 'Cristian', 'SUBORDONAT', 6),
-    ('Anghel', 'Stefan', 'SUBORDONAT', 6),
-    ('Lupu', 'Anca', 'SUBORDONAT', 6),
+    ('Gherasim', 'Alex', 'Manager', 6),
+    ('Marin', 'Cristian', 'Employee', 6),
+    ('Anghel', 'Stefan', 'Employee', 6),
+    ('Lupu', 'Anca', 'Employee', 6),
 
     -- DevOps
-    ('Badea', 'Dan', 'MANAGER', 7),
-    ('Florescu', 'Leon', 'SUBORDONAT', 7),
-    ('Sima', 'Andreea', 'SUBORDONAT', 7),
-    ('Ciobanu', 'Edward', 'SUBORDONAT', 7),
-    ('Oprea', 'Daniel', 'SUBORDONAT', 7),
-    ('Cristea', 'Sophia', 'SUBORDONAT', 7),
-    ('Rusu', 'Matthew', 'SUBORDONAT', 7);
+    ('Badea', 'Dan', 'Manager', 7),
+    ('Florescu', 'Leon', 'Employee', 7),
+    ('Sima', 'Andreea', 'Employee', 7),
+    ('Ciobanu', 'Edward', 'Employee', 7),
+    ('Oprea', 'Daniel', 'Employee', 7),
+    ('Cristea', 'Sophia', 'Employee', 7),
+    ('Rusu', 'Matthew', 'Employee', 7);
 
-CALL InsertBirouri();
+CALL InsertDesks();
