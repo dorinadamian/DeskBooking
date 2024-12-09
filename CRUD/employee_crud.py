@@ -7,8 +7,16 @@ def get_employees():
     all_employees = Employee.query.all()
     return jsonify(employees_schema.dump(all_employees))
 
+# Get an employee by ID
+@app.route('/employees/<int:id>', methods=['GET'])
+def get_employee_by_id(id):
+    employee = Employee.query.get(id)
+    if employee is None:
+        return jsonify({"message": "Employee not found"}), 404
+    return jsonify(employee_schema.dump(employee))
+
 # Add a new employee
-@app.route('/employee', methods=['POST'])
+@app.route('/employees', methods=['POST'])
 def add_employee():
     data = request.json
     print(data)
@@ -23,7 +31,7 @@ def add_employee():
     return employee_schema.jsonify(new_employee)
 
 # Update an employee
-@app.route('/employee/<int:id>', methods=['PUT'])
+@app.route('/employees/<int:id>', methods=['PUT'])
 def update_employee(id):
     employee = Employee.query.get_or_404(id)
     data = request.json
@@ -35,7 +43,7 @@ def update_employee(id):
     return employee_schema.jsonify(employee)
 
 # Delete an employee
-@app.route('/employee/<int:id>', methods=['DELETE'])
+@app.route('/employees/<int:id>', methods=['DELETE'])
 def delete_employee(id):
     employee = Employee.query.get_or_404(id)
     db.session.delete(employee)

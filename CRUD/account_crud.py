@@ -7,8 +7,16 @@ def get_accounts():
     all_accounts = Account.query.all()
     return jsonify(accounts_schema.dump(all_accounts))
 
+# Get an account by ID
+@app.route('/accounts/<int:id>', methods=['GET'])
+def get_account_by_id(id):
+    account = Account.query.get(id)
+    if account is None:
+        return jsonify({"message": "Account not found"}), 404
+    return jsonify(account_schema.dump(account))
+
 # Add a new account
-@app.route('/account', methods=['POST'])
+@app.route('/accounts', methods=['POST'])
 def add_account():
     data = request.json
     new_account = Account(
@@ -22,7 +30,7 @@ def add_account():
     return account_schema.jsonify(new_account)
 
 # Update an account
-@app.route('/account/<int:id>', methods=['PUT'])
+@app.route('/accounts/<int:id>', methods=['PUT'])
 def update_account(id):
     account = Account.query.get_or_404(id)
     data = request.json
@@ -34,7 +42,7 @@ def update_account(id):
     return account_schema.jsonify(account)
 
 # Delete an account
-@app.route('/account/<int:id>', methods=['DELETE'])
+@app.route('/accounts/<int:id>', methods=['DELETE'])
 def delete_account(id):
     account = Account.query.get_or_404(id)
     db.session.delete(account)

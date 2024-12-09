@@ -29,7 +29,7 @@ CREATE TABLE tblEmployee(
 
 CREATE TABLE tblAccount(
     idAccount INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(120) NULL,
+    email VARCHAR(120) NULL UNIQUE,
     password VARCHAR(50) NULL,
     role ENUM ('User', 'Admin') NOT NULL,
     employee INT NULL,
@@ -63,9 +63,20 @@ FOR EACH ROW
 BEGIN
     DECLARE generated_email TEXT;
     DECLARE generated_password VARCHAR(16);
+    DECLARE counter INT DEFAULT 0;
 
     -- Generate email
     SET generated_email = CONCAT(LOWER(NEW.firstName), '.', LOWER(NEW.lastName), '@myfirm.com');
+
+    -- Check for duplicates and add a counter if needed
+    WHILE EXISTS (
+        SELECT 1 FROM tblAccount WHERE email = generated_email
+    ) DO
+        SET counter = counter + 1;
+        SET generated_email = CONCAT(
+            LOWER(NEW.firstName), '.', LOWER(NEW.lastName), counter, '@myfirm.com'
+        );
+    END WHILE;
 
     -- Generate unique password
     SET generated_password = CONCAT(
