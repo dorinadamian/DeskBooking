@@ -31,7 +31,9 @@ const Header: React.FC = () => {
       <span className="header__title">MyDeskHub</span>
       <span className="header__name">Hi, Diana*</span>
       <span className="header__datetime">{dateTime}</span>
-      <span>cerculet</span>
+      <div className="circle">
+        <span className="circle__text">DD</span>
+      </div>
     </div>
   );
 };

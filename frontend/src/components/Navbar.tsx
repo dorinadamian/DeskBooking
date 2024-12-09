@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
         <div className="navbar__text">Today</div>
       </div>
 
-      <div onClick={() => handlePath(2, "bookdesk")} className={`navbar__button ${path == 2 ? "active" : ""}`}>
+      <div onClick={() => handlePath(2, "booking")} className={`navbar__button ${path == 2 ? "active" : ""}`}>
         <svg
           className="navbar__svg"
           width="50"
@@ -57,7 +57,7 @@ const Navbar: React.FC = () => {
         <div className="navbar__text">Your booking</div>
       </div>
 
-      <div onClick={() => handlePath(3, 'booking')} className={`navbar__button ${path == 3 ? "active" : ""}`}>
+      <div onClick={() => handlePath(3, "bookdesk")} className={`navbar__button ${path == 3 ? "active" : ""}`}>
         <svg
           className="navbar__svg"
           width="50"
