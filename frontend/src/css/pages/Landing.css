@@ -123,3 +123,11 @@ body {
 .x{
   display: flex;
 }
+
+.error-message {
+  color: red;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  font-size: 15px;
+  text-align: center;
+}

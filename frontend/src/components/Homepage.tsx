@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { fetchEmployeeName } from '../utils/api';
 import foto from "../assets/image 7.png";
 import foto1 from "../assets/calendar.png";
 
 const Homepage: React.FC = () => {
   const [dateTime, setDateTime] = useState("");
+  const [employeeName, setEmployeeName] = useState("");
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -43,6 +45,18 @@ const Homepage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const getEmployeeName = async () => {
+      const idEmployee = localStorage.getItem('idEmployee');
+      if (idEmployee) {
+        const { firstName } = await fetchEmployeeName(Number(idEmployee));
+        setEmployeeName(firstName);
+      }
+    };
+
+    getEmployeeName();
+  }, []);
+
   return (
     <>
       <div className="homepage__total">
@@ -52,7 +66,7 @@ const Homepage: React.FC = () => {
           <div className="homepage__text">
             Hello,{" "}
             <span>
-              <b>Diana*</b>
+              <b>{employeeName}</b>
             </span>
           </div>
           <div className="homepage__information">

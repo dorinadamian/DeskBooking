@@ -2,12 +2,14 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow, validate
 from marshmallow import fields, validate
+from flask_cors import CORS
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
 
 # Configure the database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Dorina2000#@localhost/deskBookingDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password#@localhost/deskBookingDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy and Marshmallow

@@ -2,7 +2,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    background-color: rgba(31, 69, 147, 0.56);
+    /* background-color: rgba(31, 69, 147, 0.56); */
+    background-color: #788EB9;
     width: 20rem;
     height: 41.1rem;
     margin-top: 1.5rem;
