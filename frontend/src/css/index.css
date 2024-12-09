@@ -1,0 +1,10 @@
+@import 'pages/Landing';
+@import 'components/BookDesk';
+@import 'components/Header';
+@import 'components/Homepage';
+@import 'components/Navbar';
+
+
+.style{
+    display: flex;
+}

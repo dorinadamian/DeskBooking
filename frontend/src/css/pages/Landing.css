@@ -1,0 +1,125 @@
+body {
+  background-color: #ebebeb;
+}
+
+.container {
+  margin-top: 6rem;
+  display: flex;
+  width: 800px;
+  height: 500px;
+  margin-left: 20rem;
+  margin-right: 15rem;
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.container__left{
+  background-color: #1f4593;
+  border-radius: 0px 8rem 8rem 0px;
+  color: white;
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.container__left h1 {
+  margin-bottom: 20px;
+}
+
+.container__left p {
+  margin-bottom: 30px;
+}
+
+.register-btn {
+  background-color: #1f4593;
+  color: #fff;
+  border: 2px solid white;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.container__right{
+  background-color: white;
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container__right h1 {
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 60px;
+  font-weight: 500;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  justify-content: space-between;
+  border-radius: 15px;
+  background-color: #eaeaea;
+  width: 18rem;
+}
+
+.input__group__text{
+  color: #2d2d2d;
+  font-size: 16px;
+  margin-left: 2rem;
+  margin-bottom: 0.5rem;
+  background-color: #eaeaea;
+  border: none;
+  outline: none;
+}
+
+.foto__user {
+  height: 22px;
+  justify-content: space-between;
+  margin-left: 1rem;
+  margin-top: 0.5rem;
+}
+
+.foto__password {
+  height: 22px;
+  margin-left: 1rem;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.forgot-password {
+  font-size: 12px;
+  color: #767676;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.login-btn {
+  background-color: #1f4593;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 18rem;
+  text-align: center;
+  border-radius: 15px;
+}
+
+.login-btn:hover {
+  background-color: #003399;
+}
+
+.x{
+  display: flex;
+}
