@@ -1,0 +1,63 @@
+.homepage{
+    position: relative;
+    background-color: #fff;
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+    margin-top: 1.5rem;
+    border-radius: 10px;
+    width: 70rem;
+    height: 25rem;
+}
+
+.homepage__clock{
+    height: 25px;
+    margin-top: 1.5rem;
+    margin-left: 3rem;
+}
+
+.homepage__datetime{
+    color: #000;
+    margin-left: 3rem;
+    margin-top: 0.5rem;
+    font-size: 18px;
+    font-weight: 300;
+}
+
+.homepage__text{
+    margin-left: 3rem;
+    margin-top: 2rem;
+    font-size: 35px;
+    font-weight: 300;
+}
+
+.homepage__information{
+    font-size: 20px;
+    margin-top: 3.5rem;
+    margin-left: 3rem;
+}
+
+.homepage__button{
+    color: #1F4593;
+    font-size: 16px;
+    margin-left: 3rem;
+    margin-top: 6rem;
+    cursor: pointer;
+}
+
+.homepage__total{
+    display: flex;
+    flex-direction: column;
+}
+
+.foto__calendar{
+    margin-top: 4rem;
+    margin-left: 35rem;
+    height: 18%;
+    width: 10%;
+}
+
+.information{
+    margin-left: 31rem;
+    margin-top: 1rem;
+    font-size: 20px;
+}

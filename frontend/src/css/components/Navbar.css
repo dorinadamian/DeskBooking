@@ -1,0 +1,49 @@
+.navbar__container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(31, 69, 147, 0.56);
+    width: 20rem;
+    height: 41.1rem;
+    margin-top: 1.5rem;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+
+    padding-top: 5rem;
+    gap: 2rem;
+}
+
+.active {
+    background-color: #1F4593 !important;
+    color: #fff !important;
+    fill: #fff !important;
+}
+
+.navbar__button{
+    display: flex;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    border-radius: 20px;
+    width: 18rem;
+    height: 4rem;
+    background-color: #fff;
+    cursor: pointer;
+    color: #2d2d2d;
+
+}
+
+.navbar__svg{
+    margin-top: 0.5rem;
+    margin-left: 2.5rem;
+}
+
+.navbar__text{
+    margin-top: 1rem;
+    margin-left: 1.5rem;
+    font-weight: 500;
+    font-size: 22px;
+}
+
+.lastElement{
+    margin-top: 13rem;
+}
