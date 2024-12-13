@@ -2,8 +2,20 @@ import React, { useState, useEffect } from "react";
 import { fetchEmployeeName } from '../utils/api';
 import foto from "../assets/image 7.png";
 import foto1 from "../assets/calendar.png";
+import { useNavigate } from "react-router-dom";
 
 const Homepage: React.FC = () => {
+  const [path, setPath] = useState(0);
+  const handlePath = (selectedPath: number, location: string) => {
+    setPath(selectedPath);
+    navigate(`/${location}`);
+  }
+
+  const handleNavigate = () =>{
+    navigate('/');
+  }
+
+  const navigate = useNavigate();
   const [dateTime, setDateTime] = useState("");
   const [employeeName, setEmployeeName] = useState("");
 
@@ -72,7 +84,7 @@ const Homepage: React.FC = () => {
           <div className="homepage__information">
             You are working remotely today.
           </div>
-          <div className="homepage__button">Change your status</div>
+          <div onClick={() => handlePath(0, "bookdesk")} className="homepage__button">Change your status</div>
         </div>
 
         <img className="foto__calendar" src={foto1} alt="calendar"/>
