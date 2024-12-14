@@ -22,10 +22,10 @@
 
 .navbar__button{
     display: flex;
-    margin-left: 1rem;
-    margin-right: 1rem;
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
     border-radius: 20px;
-    width: 18rem;
+    width: 17rem;
     height: 4rem;
     background-color: #fff;
     cursor: pointer;
@@ -40,9 +40,9 @@
 
 .navbar__text{
     margin-top: 1rem;
-    margin-left: 1.5rem;
+    margin-left: 1rem;
     font-weight: 500;
-    font-size: 22px;
+    font-size: 20px;
 }
 
 .lastElement{
