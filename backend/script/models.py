@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Configure the database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/deskBookingDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Dorina2000#@localhost/deskBookingDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy and Marshmallow
@@ -47,10 +47,19 @@ class Account(db.Model):
     role = db.Column(db.Enum('User', 'Admin'), nullable=False)
     employee = db.Column(db.Integer, db.ForeignKey('tblEmployee.idEmployee',  ondelete='CASCADE', onupdate='CASCADE'), nullable=True)
 
+class Location(db.Model):
+    __tablename__ = 'tblLocation'
+    idLocation = db.Column(db.Integer, primary_key=True)
+    country = db.Column(db.String(100), nullable=False)
+    city = db.Column(db.String(100), nullable=False)
+    # One-to-Many: Location -> Desks
+    desks = db.relationship('Desk', backref='location_ref', cascade='all, delete, delete-orphan', passive_deletes=True)
+
 class Desk(db.Model):
     __tablename__ = 'tblDesk'
     idDesk = db.Column(db.Integer, primary_key=True)
     availability = db.Column(db.Enum('Free', 'Busy'), nullable=False)
+    location = db.Column(db.Integer, db.ForeignKey('tblLocation.idLocation', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
 
     # One-to-Many: Desk -> Bookings
     bookings = db.relationship('Booking', backref='desk_ref', cascade='all, delete, delete-orphan', passive_deletes=True)
@@ -83,10 +92,16 @@ class AccountSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
     employee_ref = ma.Nested('EmployeeSchema', many=False)
 
+class LocationSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Location
+        load_instance = True
+
 class DeskSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Desk
         load_instance = True
+    location_ref = ma.Nested('LocationSchema', many=False)
 
 class BookingSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -104,6 +119,9 @@ employees_schema = EmployeeSchema(many=True)
 
 account_schema = AccountSchema()
 accounts_schema = AccountSchema(many=True)
+
+location_schema = LocationSchema()
+locations_schema = LocationSchema(many=True)
 
 desk_schema = DeskSchema()
 desks_schema = DeskSchema(many=True)

@@ -1,4 +1,4 @@
--- SOURCE C:/Proiect/DeskBookingApp/DeskBooking/desk_booking.sql;
+-- SOURCE C:/Proiect/DeskBookingApp/desk_booking.sql;
 
 /*#############################################################*/
 /*        PART 1 - DROPPING AND RECREATING THE DATABASE        */
@@ -37,9 +37,19 @@ CREATE TABLE tblAccount(
         REFERENCES tblEmployee(idEmployee) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE tblLocation(
+    idLocation INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    country VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE tblDesk(
     idDesk INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    availability ENUM ('Free', 'Busy') NOT NULL
+    deskNumber INT NOT NULL,
+    availability ENUM ('Free', 'Busy') NOT NULL,
+    location INT NOT NULL,
+    CONSTRAINT fk_location FOREIGN KEY(location)
+        REFERENCES tblLocation(idLocation) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE tblBooking(
@@ -94,10 +104,16 @@ END;
 CREATE PROCEDURE InsertDesks()
 BEGIN
     DECLARE i INT DEFAULT 1;
+    DECLARE locCount INT DEFAULT 1;
 
-    WHILE i <= 50 DO
-        INSERT INTO tblDesk(availability) VALUES('FREE');
-        SET i = i + 1;
+    -- Insert desks for each location
+    WHILE locCount <= (SELECT COUNT(*) FROM tblLocation) DO
+        SET i = 1;
+        WHILE i <= 50 DO
+            INSERT INTO tblDesk(deskNumber, availability, location) VALUES(i, 'FREE', locCount);
+            SET i = i + 1;
+        END WHILE;
+        SET locCount = locCount + 1;
     END WHILE;
 END;
 //
@@ -169,5 +185,12 @@ INSERT INTO tblEmployee (lastName, firstName, role, department) VALUES
     ('Oprea', 'Daniel', 'Employee', 7),
     ('Cristea', 'Sophia', 'Employee', 7),
     ('Rusu', 'Matthew', 'Employee', 7);
+
+-- Populate tblLocation
+INSERT INTO tblLocation (country, city) VALUES 
+    ('Romania', 'Bucharest'),
+    ('Romania', 'Cluj-Napoca'),
+    ('Romania', 'Timisoara'),
+    ('Germany', 'Berlin');
 
 CALL InsertDesks();

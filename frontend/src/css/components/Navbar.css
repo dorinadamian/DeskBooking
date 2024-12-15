@@ -22,6 +22,7 @@
 
 .navbar__button{
     display: flex;
+    align-items: center;
     margin-left: 1.5rem;
     margin-right: 1.5rem;
     border-radius: 20px;
@@ -34,12 +35,12 @@
 }
 
 .navbar__svg{
-    margin-top: 0.5rem;
+    margin-top: 0.3rem;
     margin-left: 2.5rem;
 }
 
 .navbar__text{
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
     margin-left: 1rem;
     font-weight: 500;
     font-size: 20px;

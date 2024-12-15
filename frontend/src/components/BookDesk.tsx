@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const BookDesk: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState("Romania");
   const [selectedLocation, setSelectedLocation] = useState("Bucharest");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<{
-    from: string;
-    to: string;
-  }>({ from: "", to: "" });
+  const [availableFromHours, setAvailableFromHours] = useState<string[]>([]);
+  const [showTimePicker, setShowTimePicker] = useState(true);
+  const [warningMessage, setWarningMessage] = useState("");
 
   const countries = ["Romania", "Italy"];
   const locations = ["Bucharest", "Timișoara", "Iași"];
@@ -203,53 +202,89 @@ const BookDesk: React.FC = () => {
   //   );
   // };
 
-  const TimePicker = () => {
-    const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>(
-      { from: "", to: "" }
-    );
+  useEffect(() => {
+    if (selectedDate) {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const nowDateString = now.toLocaleDateString("en-CA"); // Extrage doar partea de dată în format YYYY-MM-DD
+      const isToday = selectedDate.toString() === nowDateString;
+
+      if (isToday && currentHour < 2) {
+        setShowTimePicker(false);
+        setWarningMessage("Nu se mai pot face rezervări pentru această dată.");
+      } else {
+        setShowTimePicker(true);
+        setWarningMessage("");
+      }
+      // Log the values of warningMessage and showTimePicker
+      console.log("today:", now.toLocaleDateString());
+      console.log("selectedDate:", selectedDate.toString());
+      console.log("Warning Message:", warningMessage);
+      console.log("Show Time Picker:", showTimePicker);
+    }
+  }, [selectedDate, warningMessage, showTimePicker]);
   
-    const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+  const TimePicker = ({ selectedDate }: { selectedDate: Date }) => {
+    const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>({ from: "", to: "" });
+    const [availableFromHours, setAvailableFromHours] = useState<string[]>([]);
+    const [availableToHours, setAvailableToHours] = useState<string[]>([]);
+  
+    useEffect(() => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const isToday = selectedDate.toDateString() === now.toDateString();
+  
+      let fromHours: string[] = [];
+      if (isToday && currentHour >= 8) {
+        fromHours = Array.from({ length: 24 - currentHour }, (_, i) => `${currentHour + i}:00`).filter(hour => parseInt(hour) >= currentHour);
+      } else {
+        fromHours = Array.from({ length: 11 }, (_, i) => `${8 + i}:00`);
+      }
+  
+      setAvailableFromHours(fromHours);
+      console.log("now", now.toDateString());
+      console.log("selectedDate", selectedDate.toDateString());
+    }, [selectedDate]);
+  
+    useEffect(() => {
+      if (selectedTime.from) {
+        const fromHour = parseInt(selectedTime.from);
+        const toHours = Array.from({ length: 24 - fromHour }, (_, i) => `${fromHour + i}:00`).filter(hour => parseInt(hour) >= fromHour + 2 && parseInt(hour) <= 20);
+        setAvailableToHours(toHours);
+      } else {
+        setAvailableToHours([]);
+      }
+    }, [selectedTime.from]);
   
     const isButtonDisabled = !selectedTime.from || !selectedTime.to;
   
     return (
       <div className="time-picker">
-        <h4>Select time for {selectedDate}</h4>
+        <h4>Select time for {selectedDate.toDateString()}</h4>
         <label>
           From:
           <select
-            className="time-picker-select from"
             value={selectedTime.from}
-            onChange={(e) =>
-              setSelectedTime({ ...selectedTime, from: e.target.value })
-            }
+            onChange={(e) => setSelectedTime({ ...selectedTime, from: e.target.value })}
           >
             <option value="">Select time</option>
-            {hours.map((hour) => (
-              <option key={hour} value={hour}>
-                {hour}
-              </option>
+            {availableFromHours.map(hour => (
+              <option key={hour} value={hour}>{hour}</option>
             ))}
           </select>
         </label>
         <label>
           To:
           <select
-            className="time-picker-select to"
             value={selectedTime.to}
-            onChange={(e) =>
-              setSelectedTime({ ...selectedTime, to: e.target.value })
-            }
+            onChange={(e) => setSelectedTime({ ...selectedTime, to: e.target.value })}
           >
             <option value="">Select time</option>
-            {hours.map((hour) => (
-              <option key={hour} value={hour}>
-                {hour}
-              </option>
+            {availableToHours.map(hour => (
+              <option key={hour} value={hour}>{hour}</option>
             ))}
           </select>
         </label>
-  
         <button
           className={`button__timepicker ${isButtonDisabled ? "disabled" : ""}`}
           disabled={isButtonDisabled}
@@ -260,6 +295,7 @@ const BookDesk: React.FC = () => {
     );
   };
   
+
 
   return (
     <>
@@ -287,10 +323,16 @@ const BookDesk: React.FC = () => {
             </div>
             <Calendar />
           </div>
-
+          <div className="calendar">
+        {/* Exemplu de celulă de calendar */}
+        <div className="calendar-cell">
+          <span>14</span>
+          {warningMessage && <div className="warning-message">{warningMessage}</div>}
+        </div>
+      </div>
           {selectedDate && (
             <div className="bookDesk__right">
-              <TimePicker />
+              {showTimePicker && selectedDate && <TimePicker selectedDate={new Date(selectedDate)} />}
             </div>
           )}
         </div>
