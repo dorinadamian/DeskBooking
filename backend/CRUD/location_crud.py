@@ -41,3 +41,9 @@ def delete_location(id):
     db.session.delete(location)
     db.session.commit()
     return jsonify({'message': 'Location deleted'})
+
+# Get all countries
+@app.route('/locations/countries', methods=['GET'])
+def get_countries():
+    countries = db.session.query(Location.country).distinct().all()
+    return jsonify([country[0] for country in countries])

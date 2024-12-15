@@ -1,24 +1,44 @@
 import React, { useState, useEffect } from "react";
+import { fetchCountries, fetchLocations } from '../utils/api';
 
 const BookDesk: React.FC = () => {
-  const [selectedCountry, setSelectedCountry] = useState("Romania");
-  const [selectedLocation, setSelectedLocation] = useState("Bucharest");
+  const [countries, setCountries] = useState<string[]>([]);
+  const [locations, setLocations] = useState<{ [key: string]: string[] }>({});
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [availableFromHours, setAvailableFromHours] = useState<string[]>([]);
   const [showTimePicker, setShowTimePicker] = useState(true);
   const [warningMessage, setWarningMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
-  const countries = ["Romania", "Italy"];
-  const locations = ["Bucharest", "Timișoara", "Iași"];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const countries = await fetchCountries();
+        setCountries(countries);
+
+        const locationsByCountry = await fetchLocations();
+        console.log("locationsByCountry", locationsByCountry);
+        setLocations(locationsByCountry);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+    console.log("fetchData", locations);
+  }, []);
 
   const Dropdown = ({
     options,
     selectedOption,
     onOptionSelect,
+    disabled = false,
   }: {
     options: string[];
     selectedOption: string;
     onOptionSelect: (option: string) => void;
+    disabled?: boolean;
   }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -30,9 +50,9 @@ const BookDesk: React.FC = () => {
     };
 
     return (
-      <div className="dropdown">
-        <div className="dropdown-header" onClick={toggleDropdown}>
-          {selectedOption}
+      <div className={`dropdown ${disabled ? "disabled" : ""}`}>
+        <div className="dropdown-header" onClick={!disabled ? toggleDropdown : undefined}>
+          {selectedOption || "Select"}
           <svg
             className="dropdown-arrow"
             width="32"
@@ -53,9 +73,7 @@ const BookDesk: React.FC = () => {
               <li
                 key={option}
                 onClick={() => selectOption(option)}
-                className={`dropdown-item ${
-                  option === selectedOption ? "selected" : ""
-                }`}
+                className={`dropdown-item ${option === selectedOption ? "selected" : ""}`}
               >
                 {option}
               </li>
@@ -69,21 +87,21 @@ const BookDesk: React.FC = () => {
   const Calendar = () => {
     const [month, setMonth] = useState(new Date().getMonth());
     const [year, setYear] = useState(new Date().getFullYear());
-  
+
     const currentDate = new Date(); // Data curentă
     const daysInMonth = new Date(year, month + 1, 0).getDate(); // Numărul de zile din lună
     let firstDay = new Date(year, month, 1).getDay(); // Prima zi a lunii (0 = Duminică, 1 = Luni, etc.)
-  
+
     // Ajustare pentru 1 ianuarie 2025
     if (year === 2025 && month === 0) {
       firstDay = 3; // 3 corespunde zilei de miercuri
     }
-  
+
     // Dacă prima zi este 0 (Duminică), mutăm la 7 pentru a începe cu Luni
     if (firstDay === 0) {
       firstDay = 7;
     }
-  
+
     const handleDayClick = (day: number, isPast: boolean) => {
       if (!isPast) {
         const clickedDate = `${year}-${month + 1}-${day}`;
@@ -92,7 +110,7 @@ const BookDesk: React.FC = () => {
         );
       }
     };
-  
+
     const handleNextMonth = () => {
       if (month === 11) {
         setMonth(0);
@@ -101,7 +119,7 @@ const BookDesk: React.FC = () => {
         setMonth((prevMonth) => prevMonth + 1);
       }
     };
-  
+
     const handlePrevMonth = () => {
       if (month === 0) {
         setMonth(11);
@@ -110,7 +128,7 @@ const BookDesk: React.FC = () => {
         setMonth((prevMonth) => prevMonth - 1);
       }
     };
-  
+
     return (
       <div className="calendar">
         <div className="calendar-header">
@@ -139,7 +157,7 @@ const BookDesk: React.FC = () => {
               (year === currentDate.getFullYear() &&
                 month === currentDate.getMonth() &&
                 day < currentDate.getDate());
-  
+
             return (
               <div
                 key={i}
@@ -156,51 +174,6 @@ const BookDesk: React.FC = () => {
       </div>
     );
   };
-  
-
-  // const TimePicker = () => {
-  //   const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
-
-  //   return (
-  //     <div className="time-picker">
-  //       <h4>Select time for {selectedDate}</h4>
-  //       <label >
-  //         From:
-  //         <select
-  //           value={selectedTime.from}
-  //           onChange={(e) =>
-  //             setSelectedTime({ ...selectedTime, from: e.target.value })
-  //           }
-  //         >
-  //           <option value="">Select time</option>
-  //           {hours.map((hour) => (
-  //             <option key={hour} value={hour}>
-  //               {hour}
-  //             </option>
-  //           ))}
-  //         </select>
-  //       </label>
-  //       <label>
-  //         To:
-  //         <select
-  //           value={selectedTime.to}
-  //           onChange={(e) =>
-  //             setSelectedTime({ ...selectedTime, to: e.target.value })
-  //           }
-  //         >
-  //           <option value="">Select time</option>
-  //           {hours.map((hour) => (
-  //             <option key={hour} value={hour}>
-  //               {hour}
-  //             </option>
-  //           ))}
-  //         </select>
-  //       </label>
-
-  //       <button className="button__timepicker">Search</button>
-  //     </div>
-  //   );
-  // };
 
   useEffect(() => {
     if (selectedDate) {
@@ -209,43 +182,50 @@ const BookDesk: React.FC = () => {
       const nowDateString = now.toLocaleDateString("en-CA"); // Extrage doar partea de dată în format YYYY-MM-DD
       const isToday = selectedDate.toString() === nowDateString;
 
-      if (isToday && currentHour < 2) {
+      if (isToday && currentHour >= 18) {
         setShowTimePicker(false);
-        setWarningMessage("Nu se mai pot face rezervări pentru această dată.");
+        setWarningMessage("You can no longer book a desk for today.");
+        setShowPopup(true);
+        setSelectedDate(null);
       } else {
         setShowTimePicker(true);
         setWarningMessage("");
+        setShowPopup(false);
       }
-      // Log the values of warningMessage and showTimePicker
-      console.log("today:", now.toLocaleDateString());
-      console.log("selectedDate:", selectedDate.toString());
-      console.log("Warning Message:", warningMessage);
-      console.log("Show Time Picker:", showTimePicker);
     }
   }, [selectedDate, warningMessage, showTimePicker]);
-  
+
+  useEffect(() => {
+    if (showPopup) {
+      const timer = setTimeout(() => {
+        setShowPopup(false);
+      }, 4000); // Dispare după 4 secunde
+      return () => clearTimeout(timer);
+    }
+  }, [showPopup]);
+
   const TimePicker = ({ selectedDate }: { selectedDate: Date }) => {
     const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>({ from: "", to: "" });
     const [availableFromHours, setAvailableFromHours] = useState<string[]>([]);
     const [availableToHours, setAvailableToHours] = useState<string[]>([]);
-  
+
     useEffect(() => {
       const now = new Date();
       const currentHour = now.getHours();
       const isToday = selectedDate.toDateString() === now.toDateString();
-  
+
       let fromHours: string[] = [];
       if (isToday && currentHour >= 8) {
-        fromHours = Array.from({ length: 24 - currentHour }, (_, i) => `${currentHour + i}:00`).filter(hour => parseInt(hour) >= currentHour);
+        fromHours = Array.from({ length: 19 - currentHour }, (_, i) => `${currentHour + i}:00`).filter(hour => parseInt(hour) >= currentHour);
       } else {
         fromHours = Array.from({ length: 11 }, (_, i) => `${8 + i}:00`);
       }
-  
+
       setAvailableFromHours(fromHours);
       console.log("now", now.toDateString());
       console.log("selectedDate", selectedDate.toDateString());
     }, [selectedDate]);
-  
+
     useEffect(() => {
       if (selectedTime.from) {
         const fromHour = parseInt(selectedTime.from);
@@ -255,9 +235,9 @@ const BookDesk: React.FC = () => {
         setAvailableToHours([]);
       }
     }, [selectedTime.from]);
-  
+
     const isButtonDisabled = !selectedTime.from || !selectedTime.to;
-  
+
     return (
       <div className="time-picker">
         <h4>Select time for {selectedDate.toDateString()}</h4>
@@ -287,54 +267,58 @@ const BookDesk: React.FC = () => {
         </label>
         <button
           className={`button__timepicker ${isButtonDisabled ? "disabled" : ""}`}
-          disabled={isButtonDisabled}
-        >
+          disabled={isButtonDisabled}>
           Search
         </button>
       </div>
     );
   };
-  
-
 
   return (
     <>
       <div className="bookDesk">
         <div className="bookDesk__title">Book a Desk</div>
         <div className="bookDesk__page">
-          <div className="bookDesk__left">
+          <div className="bookDesk__top">
             <div className="bookDesk__choose">
               <div className="bookDesk__type">
                 <div className="name">Country</div>
                 <Dropdown
                   options={countries}
                   selectedOption={selectedCountry}
-                  onOptionSelect={setSelectedCountry}
+                  onOptionSelect={(country) => {
+                    setSelectedCountry(country);
+                    setSelectedLocation(""); // Reset location when country changes
+                  }}
                 />
               </div>
               <div className="bookDesk__type">
                 <div className="name">Location</div>
                 <Dropdown
-                  options={locations}
+                  options={locations[selectedCountry] || []}
                   selectedOption={selectedLocation}
                   onOptionSelect={setSelectedLocation}
+                  disabled={!selectedCountry}
                 />
               </div>
             </div>
-            <Calendar />
           </div>
-          <div className="calendar">
-        {/* Exemplu de celulă de calendar */}
-        <div className="calendar-cell">
-          <span>14</span>
-          {warningMessage && <div className="warning-message">{warningMessage}</div>}
-        </div>
-      </div>
-          {selectedDate && (
-            <div className="bookDesk__right">
-              {showTimePicker && selectedDate && <TimePicker selectedDate={new Date(selectedDate)} />}
-            </div>
-          )}
+          <div className="bookDesk__bottom">
+            <Calendar />
+            {selectedDate && (
+              <div className="bookDesk__right">
+                {showTimePicker && selectedDate && <TimePicker selectedDate={new Date(selectedDate)} />}
+              </div>
+            )}
+            {showPopup && (
+              <div className="popup">
+                <p>{warningMessage}</p>
+                <div className="progress-bar">
+                  <div className="progress"></div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

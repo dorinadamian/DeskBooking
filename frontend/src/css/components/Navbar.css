@@ -2,16 +2,17 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    /* background-color: rgba(31, 69, 147, 0.56); */
     background-color: #788EB9;
-    width: 20rem;
-    height: 41.1rem;
+    width: 20rem; /* Lățimea fixă a navbar-ului */
+    height: calc(100% - 3rem);
     margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
-
     padding-top: 5rem;
     gap: 2rem;
+    overflow-y: auto;
+    align-items: center; /* Centrează elementele pe orizontală */
 }
 
 .active {
@@ -23,8 +24,6 @@
 .navbar__button{
     display: flex;
     align-items: center;
-    margin-left: 1.5rem;
-    margin-right: 1.5rem;
     border-radius: 20px;
     width: 17rem;
     height: 4rem;
@@ -47,5 +46,6 @@
 }
 
 .lastElement{
-    margin-top: 13rem;
+    margin-top: auto;
+    margin-bottom: 1.5rem;
 }

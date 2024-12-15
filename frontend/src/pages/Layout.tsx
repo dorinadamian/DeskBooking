@@ -20,11 +20,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {routeWithElements.includes(location.pathname as RoutesPathList) ? (
         <Header />
       ) : null}
-      <div className='style'>
+      <div className="layout">
       {routeWithElements.includes(location.pathname as RoutesPathList) ? (
-        <Navbar />
+        <div className="navbar">
+          <Navbar />
+        </div>
       ) : null}
-      {children}
+        <div className="content">{children}</div>
       </div>
       
       

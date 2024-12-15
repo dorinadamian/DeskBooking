@@ -1,49 +1,61 @@
+.bookDesk {
+  height: 100%;
+}
+
 .bookDesk__title {
   display: flex;
   font-size: 40px;
   font-weight: 500;
-  margin-top: 2rem;
-  margin-left: 2.7rem;
+  height:fit-content;
+  padding-top: 1.5rem;
+  margin-left: 2.5rem;
 }
 
 .bookDesk__page {
   position: relative;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column; /* Împarte pe verticală */
   gap: 20px;
-  flex-direction: column;
   background-color: #fff;
   margin-left: 2.5rem;
   margin-right: 2.5rem;
-  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
   border-radius: 10px;
-  width: 70rem;
-  height: 34rem;
+  height: calc(100% - 3rem - 60px); /* Setează înălțimea automată */
+  min-height: 34rem; /* Setează înălțimea minimă */
+  padding: 2rem; /* Adaugă padding pentru a asigura spațiul egal */
+  box-sizing: border-box; /* Include padding-ul și marginile în dimensiunile totale */
 }
 
-.bookDesk__left {
-  max-width: 400px;
+.bookDesk__top {
+  flex: 0 0 30%;
   display: flex;
   justify-content: space-between;
-  margin-top: 2.5rem;
-  margin-left: 2rem;
+  margin-top: 1rem;
+  margin-left: 1.5rem;
+  flex-direction: column;
+  justify-content: flex-start;
   width: 100%;
-  height: 20%;
+}
+
+.bookDesk__bottom {
+  flex: 1; /* 70% din înălțimea containerului */
+  display: flex;
+  gap: 20px;
 }
 
 .bookDesk__right {
-  margin-bottom: 8rem;
-  margin-left: 52rem;
-  flex: 0 0 300px;
+  flex: 1;
   border-radius: 10px;
-  padding: 15px;
+  /* padding: 15px; */
   position: relative;
+  /* margin-top: 2.5rem; Ajustează marginea de sus pentru aliniere */
 }
 
 .bookDesk__choose {
   display: flex;
   width: 100%;
-  gap: 4rem;
+  gap: 2rem;
 }
 
 .name {
@@ -53,21 +65,21 @@
 }
 
 .bookDesk__type {
-  width: 40%;
+  width: 150px;
   color: #abaaaa;
   font-size: 22px;
 }
 
 .dropdown {
   position: relative;
-  width: 100%;
+  width: 150px;
 }
 
 .dropdown-header {
   border: 1px solid #ccc;
   padding: 8px;
   gap: 1px;
-  width: 120%;
+  width: 100%;
   border-radius: 4px;
   cursor: pointer;
   display: flex;
@@ -86,7 +98,7 @@
 
 .dropdown-list {
   list-style: none;
-  width: 120%;
+  width: 100%;
   margin: 0;
   padding: 10px 0;
   border: 1px solid #ccc;
@@ -117,12 +129,12 @@
 
 /* Container general pentru calendar */
 .calendar {
- margin-bottom: 3rem;
-  margin-left: 7rem;
+  margin-left: 1.5rem;
   display: flex;
   flex-direction: column;
-  padding: 15px;
+  padding: 1rem;
   border-radius: 10px;
+  border: 1px solid #ddd;
   height: 400px;
   max-width: 400px;
   background-color: #f9f9f9;
@@ -211,21 +223,42 @@
   visibility: hidden;
 }
 
-.calendar-cell {
-  position: relative;
-}
-
-.warning-message {
-  position: absolute;
-  top: 100%; /* Poziționează mesajul dedesubtul celulei */
+.popup {
+  position: fixed;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
   background-color: #ffcccb; /* Fundal roșu deschis pentru avertizare */
   color: #000;
-  padding: 5px;
+  padding: 10px;
   border-radius: 5px;
-  z-index: 10;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
+}
+
+.progress-bar {
+  width: 100%;
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress {
+  width: 100%;
+  height: 5px;
+  background-color: #606360;
+  animation: progress-animation 4s linear backwards;
+}
+
+@keyframes progress-animation {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
 }
 
 /* Selectorul de timp */
@@ -235,9 +268,12 @@
   border-radius: 10px;
   background-color: #f9f9f9;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
+  max-width: 300px;
   width: 100%;
   height: 13rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .time-picker h4 {
@@ -281,8 +317,7 @@
 }
 
 .button__timepicker{
-  margin-top: 1rem;
-  margin-left: 4rem;
+  align-self: center; /* Centrează butonul pe orizontală */
   border-radius: 5px;
   cursor: pointer;
   padding: 8px 20px;

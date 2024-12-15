@@ -35,8 +35,6 @@ const Landing: React.FC = () => {
       <div className="container">
         <div className="container__left">
           <h1>Hello, Welcome!</h1>
-          <p>Don't have an account?</p>
-          <button className="register-btn">Register</button>
         </div>
         <div className="container__right">
           <h1 className="title">Login</h1>
