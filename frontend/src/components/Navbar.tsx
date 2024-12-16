@@ -1,17 +1,28 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar: React.FC = () => {
 
+  const navigate = useNavigate();
+  const location = useLocation();
   const [path, setPath] = useState(1);
+
+  useEffect(() => {
+    if (location.pathname === "/today") {
+      setPath(1);
+    } else if (location.pathname === "/booking") {
+      setPath(2);
+    } else if (location.pathname === "/bookdesk") {
+      setPath(3);
+    }
+  }, [location.pathname]);
+
   const handlePath = (selectedPath: number, location: string) => {
     setPath(selectedPath);
     navigate(`/${location}`);
   }
 
-  const navigate = useNavigate();
-
-  const handleNavigate = () =>{
+  const handleNavigate = () => {
     navigate('/');
   }
 
@@ -54,7 +65,7 @@ const Navbar: React.FC = () => {
             className={`navbar__button ${path == 2 ? "active" : ""}`}
           />
         </svg>
-        <div className="navbar__text">Your booking</div>
+        <div className="navbar__text">Your bookings</div>
       </div>
 
       <div onClick={() => handlePath(3, "bookdesk")} className={`navbar__button ${path == 3 ? "active" : ""}`}>

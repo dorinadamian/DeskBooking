@@ -75,34 +75,37 @@ body {
 }
 
 .input-group {
+  display: flex;
+  align-items: center; 
   margin-bottom: 20px;
   justify-content: space-between;
   border-radius: 15px;
   background-color: #eaeaea;
+  width: 18rem;
+  height: 3rem;
 }
 
 .input__group__text {
   color: #2d2d2d;
   font-size: 16px;
   margin-left: 2rem;
-  margin-bottom: 0.5rem;
+  /* margin-bottom: 0.5rem; */
   background-color: #eaeaea;
   border: none;
   outline: none;
+  flex: 1;
 }
 
 .foto__user {
   height: 22px;
-  margin-right: 0.5rem;
+  margin-right: 1rem;
   justify-content: space-between;
-  margin-top: 0.8rem;
 }
 
 .foto__password {
   height: 22px;
-  margin-right: 0.5rem;
+  margin-right: 1rem;
   justify-content: space-between;
-  margin-top: 0.8rem;
 }
 
 .forgot-password {
