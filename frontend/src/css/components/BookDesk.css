@@ -4,11 +4,12 @@
 
 .bookDesk__title {
   display: flex;
-  font-size: 40px;
+  font-size: 300%;
   font-weight: 500;
-  height:fit-content;
+  align-items: center;
+  height: 10%;
   padding-top: 1.5rem;
-  margin-left: 2.5rem;
+  margin-left: 2%;
 }
 
 .bookDesk__page {
@@ -17,11 +18,11 @@
   flex-direction: column; /* Împarte pe verticală */
   gap: 20px;
   background-color: #fff;
-  margin-left: 2.5rem;
-  margin-right: 2.5rem;
+  margin-left: 2%;
+  margin-right: 2%;
   margin-bottom: 1.5rem;
   border-radius: 10px;
-  height: calc(100% - 3rem - 60px); /* Setează înălțimea automată */
+  height: calc(100% - 7rem); /* Setează înălțimea automată */
   min-height: 34rem; /* Setează înălțimea minimă */
   padding: 2rem; /* Adaugă padding pentru a asigura spațiul egal */
   box-sizing: border-box; /* Include padding-ul și marginile în dimensiunile totale */
@@ -66,7 +67,7 @@
 
 .bookDesk__type {
   width: 150px;
-  color: #abaaaa;
+  color: #2d2d2d;
   font-size: 22px;
 }
 

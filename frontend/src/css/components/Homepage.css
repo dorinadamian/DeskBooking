@@ -1,63 +1,76 @@
 .homepage{
     position: relative;
     background-color: #fff;
-    margin-left: 2.5rem;
-    margin-right: 2.5rem;
-    margin-top: 1.5rem;
+    margin-left: 2%;
+    margin-right: 2%;
+    margin-top: 2%;
+    margin-bottom: 4%;
     border-radius: 10px;
-    width: 70rem;
-    height: 25rem;
+    display: flex;
+    height: 70%;
+    width: 96%;
+    flex-direction: column;
 }
 
-.homepage__clock{
+.homepage__header {
+    display: flex;
+    flex-direction: row; /* Dispune elementele pe același rând */
+    align-items: center; /* Centrează elementele pe verticală */
+    margin-left: 4%;
+    margin-top: 2%;
+    height: 15%
+  }
+  
+  .homepage__clock {
     height: 25px;
-    margin-top: 1.5rem;
-    margin-left: 3rem;
-}
-
-.homepage__datetime{
+  }
+  
+  .homepage__datetime {
     color: #000;
-    margin-left: 3rem;
-    margin-top: 0.5rem;
-    font-size: 18px;
-    font-weight: 300;
-}
+    margin-left: 2%; /* Ajustează margin-left pentru a adăuga spațiu între elemente */
+    font-size: 100%;
+  }
 
 .homepage__text{
-    margin-left: 3rem;
-    margin-top: 2rem;
-    font-size: 35px;
+    margin-left: 4%;
+    margin-top: 2%;
+    font-size: 200%;
     font-weight: 300;
+    height: 20%;
 }
 
 .homepage__information{
-    font-size: 20px;
-    margin-top: 3.5rem;
-    margin-left: 3rem;
+    font-size: 150%;
+    margin-top: 4%;
+    margin-left: 4%;
+    height: 20%;
 }
 
 .homepage__button{
     color: #1F4593;
-    font-size: 16px;
-    margin-left: 3rem;
-    margin-top: 6rem;
+    font-size: 100%;
+    margin-left: 4%;
+    margin-top: 2%;
     cursor: pointer;
+    height: auto;
 }
 
 .homepage__total{
     display: flex;
     flex-direction: column;
+    height: 80%;
+    align-items: center;
 }
 
 .foto__calendar{
-    margin-top: 4rem;
-    margin-left: 35rem;
+    /* margin-top: 4rem;
+    margin-left: 35rem; */
     height: 18%;
     width: 10%;
 }
 
 .information{
-    margin-left: 31rem;
-    margin-top: 1rem;
-    font-size: 20px;
+    /* margin-left: 31rem;
+    margin-top: 1rem; */
+    font-size: 100%;
 }

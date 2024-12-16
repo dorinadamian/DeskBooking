@@ -73,8 +73,10 @@ const Homepage: React.FC = () => {
     <>
       <div className="homepage__total">
         <div className="homepage">
-          <img className="homepage__clock" src={foto} alt="clock" />
-          <div className="homepage__datetime">{dateTime}</div>
+          <div className="homepage__header">
+            <img className="homepage__clock" src={foto} alt="clock" />
+            <div className="homepage__datetime">{dateTime}</div>
+          </div>
           <div className="homepage__text">
             Hello,{" "}
             <span>
