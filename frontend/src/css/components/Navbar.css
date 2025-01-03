@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     background-color: #788EB9;
-    width: 20rem; /* Lățimea fixă a navbar-ului */
+    width: 20rem; 
     height: calc(100% - 3rem);
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
@@ -12,7 +12,7 @@
     padding-top: 5rem;
     gap: 2rem;
     overflow-y: auto;
-    align-items: center; /* Centrează elementele pe orizontală */
+    align-items: center; 
 }
 
 .active {
@@ -30,16 +30,15 @@
     background-color: #fff;
     cursor: pointer;
     color: #2d2d2d;
-
 }
 
 .navbar__svg{
     margin-top: 0.3rem;
-    margin-left: 2.5rem;
+    margin-left: 2rem;
 }
 
 .navbar__text{
-    /* margin-top: 1rem; */
+    margin-top: 0.5rem;
     margin-left: 1rem;
     font-weight: 500;
     font-size: 20px;

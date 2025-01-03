@@ -284,7 +284,7 @@
   color: #333;
 }
 
-.z{
+.z {
   display: flex;
   justify-content: space-between;
 }
@@ -317,7 +317,7 @@
   outline: none;
 }
 
-.button__timepicker{
+.button__timepicker {
   align-self: center; /* Centrează butonul pe orizontală */
   border-radius: 5px;
   cursor: pointer;
@@ -329,7 +329,7 @@
 }
 
 .button__timepicker.disabled {
-  background-color: #788EB9;/* Culoare pentru buton dezactivat */
+  background-color: #788eb9; /* Culoare pentru buton dezactivat */
   color: #fff;
   cursor: not-allowed;
 }

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { fetchCountries, fetchLocations } from '../utils/api';
+import { fetchCountries, fetchLocations } from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
 const BookDesk: React.FC = () => {
+  const navigate = useNavigate();
   const [countries, setCountries] = useState<string[]>([]);
   const [locations, setLocations] = useState<{ [key: string]: string[] }>({});
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -10,6 +12,11 @@ const BookDesk: React.FC = () => {
   const [showTimePicker, setShowTimePicker] = useState(true);
   const [warningMessage, setWarningMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+
+  const handlePath = () => {
+    navigate('/search'); // Navighează către "/search"
+  };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +58,10 @@ const BookDesk: React.FC = () => {
 
     return (
       <div className={`dropdown ${disabled ? "disabled" : ""}`}>
-        <div className="dropdown-header" onClick={!disabled ? toggleDropdown : undefined}>
+        <div
+          className="dropdown-header"
+          onClick={!disabled ? toggleDropdown : undefined}
+        >
           {selectedOption || "Select"}
           <svg
             className="dropdown-arrow"
@@ -73,7 +83,9 @@ const BookDesk: React.FC = () => {
               <li
                 key={option}
                 onClick={() => selectOption(option)}
-                className={`dropdown-item ${option === selectedOption ? "selected" : ""}`}
+                className={`dropdown-item ${
+                  option === selectedOption ? "selected" : ""
+                }`}
               >
                 {option}
               </li>
@@ -161,9 +173,11 @@ const BookDesk: React.FC = () => {
             return (
               <div
                 key={i}
-                className={`calendar-day ${
-                  isPast ? "inactive" : ""
-                } ${selectedDate === `${year}-${month + 1}-${day}` ? "selected" : ""}`}
+                className={`calendar-day ${isPast ? "inactive" : ""} ${
+                  selectedDate === `${year}-${month + 1}-${day}`
+                    ? "selected"
+                    : ""
+                }`}
                 onClick={() => handleDayClick(day, isPast)}
               >
                 {day}
@@ -205,7 +219,10 @@ const BookDesk: React.FC = () => {
   }, [showPopup]);
 
   const TimePicker = ({ selectedDate }: { selectedDate: Date }) => {
-    const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>({ from: "", to: "" });
+    const [selectedTime, setSelectedTime] = useState<{
+      from: string;
+      to: string;
+    }>({ from: "", to: "" });
     const [availableFromHours, setAvailableFromHours] = useState<string[]>([]);
     const [availableToHours, setAvailableToHours] = useState<string[]>([]);
 
@@ -216,7 +233,10 @@ const BookDesk: React.FC = () => {
 
       let fromHours: string[] = [];
       if (isToday && currentHour >= 8) {
-        fromHours = Array.from({ length: 19 - currentHour }, (_, i) => `${currentHour + i}:00`).filter(hour => parseInt(hour) >= currentHour);
+        fromHours = Array.from(
+          { length: 19 - currentHour },
+          (_, i) => `${currentHour + i}:00`
+        ).filter((hour) => parseInt(hour) >= currentHour);
       } else {
         fromHours = Array.from({ length: 11 }, (_, i) => `${8 + i}:00`);
       }
@@ -229,7 +249,12 @@ const BookDesk: React.FC = () => {
     useEffect(() => {
       if (selectedTime.from) {
         const fromHour = parseInt(selectedTime.from);
-        const toHours = Array.from({ length: 24 - fromHour }, (_, i) => `${fromHour + i}:00`).filter(hour => parseInt(hour) >= fromHour + 2 && parseInt(hour) <= 20);
+        const toHours = Array.from(
+          { length: 24 - fromHour },
+          (_, i) => `${fromHour + i}:00`
+        ).filter(
+          (hour) => parseInt(hour) >= fromHour + 2 && parseInt(hour) <= 20
+        );
         setAvailableToHours(toHours);
       } else {
         setAvailableToHours([]);
@@ -245,11 +270,15 @@ const BookDesk: React.FC = () => {
           From:
           <select
             value={selectedTime.from}
-            onChange={(e) => setSelectedTime({ ...selectedTime, from: e.target.value })}
+            onChange={(e) =>
+              setSelectedTime({ ...selectedTime, from: e.target.value })
+            }
           >
             <option value="">Select time</option>
-            {availableFromHours.map(hour => (
-              <option key={hour} value={hour}>{hour}</option>
+            {availableFromHours.map((hour) => (
+              <option key={hour} value={hour}>
+                {hour}
+              </option>
             ))}
           </select>
         </label>
@@ -257,17 +286,22 @@ const BookDesk: React.FC = () => {
           To:
           <select
             value={selectedTime.to}
-            onChange={(e) => setSelectedTime({ ...selectedTime, to: e.target.value })}
+            onChange={(e) =>
+              setSelectedTime({ ...selectedTime, to: e.target.value })
+            }
           >
             <option value="">Select time</option>
-            {availableToHours.map(hour => (
-              <option key={hour} value={hour}>{hour}</option>
+            {availableToHours.map((hour) => (
+              <option key={hour} value={hour}>
+                {hour}
+              </option>
             ))}
           </select>
         </label>
-        <button
+        <button onClick={() => handlePath()}
           className={`button__timepicker ${isButtonDisabled ? "disabled" : ""}`}
-          disabled={isButtonDisabled}>
+          disabled={isButtonDisabled}
+        >
           Search
         </button>
       </div>
@@ -307,7 +341,9 @@ const BookDesk: React.FC = () => {
             <Calendar />
             {selectedDate && (
               <div className="bookDesk__right">
-                {showTimePicker && selectedDate && <TimePicker selectedDate={new Date(selectedDate)} />}
+                {showTimePicker && selectedDate && (
+                  <TimePicker selectedDate={new Date(selectedDate)} />
+                )}
               </div>
             )}
             {showPopup && (

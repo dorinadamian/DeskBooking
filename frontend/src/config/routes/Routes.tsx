@@ -3,4 +3,6 @@ export const enum RoutesPathList{
     Login = '/login',
     Today = '/today',
     BookDesk = '/bookdesk',
+    Bookings = '/booking',
+    ChooseDesk = '/search',
 }

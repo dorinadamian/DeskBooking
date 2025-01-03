@@ -4,7 +4,7 @@
     margin-left: 2%;
     margin-right: 2%;
     margin-top: 2%;
-    margin-bottom: 4%;
+    margin-bottom: 2%;
     border-radius: 10px;
     display: flex;
     height: 70%;
@@ -41,7 +41,7 @@
 
 .homepage__information{
     font-size: 150%;
-    margin-top: 4%;
+    margin-top: 10%;
     margin-left: 4%;
     height: 20%;
 }
@@ -52,7 +52,16 @@
     margin-left: 4%;
     margin-top: 2%;
     cursor: pointer;
-    height: auto;
+    height: 10%;
+    width: 15%;
+    border-radius: 10px;
+    background-color: #fff;
+    border: 1px solid #1F4593;
+}
+
+.homepage__button:hover{
+    background-color: #1F4593;
+    color: #fff;
 }
 
 .homepage__total{
@@ -63,14 +72,10 @@
 }
 
 .foto__calendar{
-    /* margin-top: 4rem;
-    margin-left: 35rem; */
     height: 18%;
-    width: 10%;
+    width: 8%;
 }
 
 .information{
-    /* margin-left: 31rem;
-    margin-top: 1rem; */
     font-size: 100%;
 }

@@ -6,25 +6,43 @@ const Header: React.FC = () => {
   const [dateTime, setDateTime] = useState("");
   const [employeeInitials, setEmployeeInitials] = useState("");
 
-  useEffect(() => {
-    const updateDateTime = () => {
-      const now = new Date();
-      const formattedDateTime = now.toLocaleString("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false, 
-      }).replace(",", " |");
-      setDateTime(formattedDateTime);
-    };
-
-    updateDateTime(); 
-    const interval = setInterval(updateDateTime, 1000); 
-
-    return () => clearInterval(interval); 
-  }, []);
+    useEffect(() => {
+      const updateDateTime = () => {
+        const now = new Date();
+  
+        const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+  
+        const dayOfWeek = daysOfWeek[now.getDay()];
+        const month = months[now.getMonth()];
+        const day = now.getDate().toString().padStart(2, "0");
+        const year = now.getFullYear();
+  
+        const hours = now.getHours().toString().padStart(2, "0");
+        const minutes = now.getMinutes().toString().padStart(2, "0");
+  
+        const formattedDateTime = `${hours}:${minutes}, ${dayOfWeek}/${day}/${month}/${year}`;
+        setDateTime(formattedDateTime);
+      };
+  
+      updateDateTime();
+      const interval = setInterval(updateDateTime, 1000);
+  
+      return () => clearInterval(interval);
+    }, []);
 
   useEffect(() => {
     const getEmployeeName = async () => {
