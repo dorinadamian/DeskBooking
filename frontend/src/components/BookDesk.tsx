@@ -12,11 +12,14 @@ const BookDesk: React.FC = () => {
   const [showTimePicker, setShowTimePicker] = useState(true);
   const [warningMessage, setWarningMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [month, setMonth] = useState(new Date().getMonth());
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [tooltipMessage, setTooltipMessage] = useState("");
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const handlePath = () => {
     navigate('/search'); // Navighează către "/search"
   };
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +28,6 @@ const BookDesk: React.FC = () => {
         setCountries(countries);
 
         const locationsByCountry = await fetchLocations();
-        console.log("locationsByCountry", locationsByCountry);
         setLocations(locationsByCountry);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -33,7 +35,6 @@ const BookDesk: React.FC = () => {
     };
 
     fetchData();
-    console.log("fetchData", locations);
   }, []);
 
   const Dropdown = ({
@@ -95,11 +96,8 @@ const BookDesk: React.FC = () => {
       </div>
     );
   };
-
+   
   const Calendar = () => {
-    const [month, setMonth] = useState(new Date().getMonth());
-    const [year, setYear] = useState(new Date().getFullYear());
-
     const currentDate = new Date(); // Data curentă
     const daysInMonth = new Date(year, month + 1, 0).getDate(); // Numărul de zile din lună
     let firstDay = new Date(year, month, 1).getDay(); // Prima zi a lunii (0 = Duminică, 1 = Luni, etc.)
@@ -169,7 +167,6 @@ const BookDesk: React.FC = () => {
               (year === currentDate.getFullYear() &&
                 month === currentDate.getMonth() &&
                 day < currentDate.getDate());
-
             return (
               <div
                 key={i}
@@ -193,7 +190,7 @@ const BookDesk: React.FC = () => {
     if (selectedDate) {
       const now = new Date();
       const currentHour = now.getHours();
-      const nowDateString = now.toLocaleDateString("en-CA"); // Extrage doar partea de dată în format YYYY-MM-DD
+      const nowDateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`; // Formatează data curentă în format YYYY-M-D
       const isToday = selectedDate.toString() === nowDateString;
 
       if (isToday && currentHour >= 18) {
@@ -219,50 +216,56 @@ const BookDesk: React.FC = () => {
   }, [showPopup]);
 
   const TimePicker = ({ selectedDate }: { selectedDate: Date }) => {
-    const [selectedTime, setSelectedTime] = useState<{
-      from: string;
-      to: string;
-    }>({ from: "", to: "" });
+    const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>({ from: "", to: "" });
     const [availableFromHours, setAvailableFromHours] = useState<string[]>([]);
     const [availableToHours, setAvailableToHours] = useState<string[]>([]);
-
+    const [tooltipMessage, setTooltipMessage] = useState<string>("");
+    const [showTooltip, setShowTooltip] = useState<boolean>(false);
+  
     useEffect(() => {
       const now = new Date();
       const currentHour = now.getHours();
       const isToday = selectedDate.toDateString() === now.toDateString();
-
+  
       let fromHours: string[] = [];
       if (isToday && currentHour >= 8) {
-        fromHours = Array.from(
-          { length: 19 - currentHour },
-          (_, i) => `${currentHour + i}:00`
-        ).filter((hour) => parseInt(hour) >= currentHour);
+        fromHours = Array.from({ length: 19 - currentHour }, (_, i) => `${currentHour + i}:00`).filter(hour => parseInt(hour) >= currentHour);
       } else {
         fromHours = Array.from({ length: 11 }, (_, i) => `${8 + i}:00`);
       }
-
+  
       setAvailableFromHours(fromHours);
-      console.log("now", now.toDateString());
-      console.log("selectedDate", selectedDate.toDateString());
     }, [selectedDate]);
-
+  
     useEffect(() => {
       if (selectedTime.from) {
         const fromHour = parseInt(selectedTime.from);
-        const toHours = Array.from(
-          { length: 24 - fromHour },
-          (_, i) => `${fromHour + i}:00`
-        ).filter(
-          (hour) => parseInt(hour) >= fromHour + 2 && parseInt(hour) <= 20
-        );
+        const toHours = Array.from({ length: 24 - fromHour }, (_, i) => `${fromHour + i}:00`).filter(hour => parseInt(hour) >= fromHour + 2 && parseInt(hour) <= 20);
         setAvailableToHours(toHours);
       } else {
         setAvailableToHours([]);
       }
     }, [selectedTime.from]);
-
-    const isButtonDisabled = !selectedTime.from || !selectedTime.to;
-
+  
+    const isButtonDisabled = !selectedTime.from || !selectedTime.to || !selectedCountry || !selectedLocation;
+  
+    const handleMouseEnter = () => {
+      if ((!selectedCountry || !selectedLocation) && (!selectedTime.from || !selectedTime.to)) {
+        setTooltipMessage("You must select a location and a time slot first");
+      } else if (!selectedCountry && !selectedLocation) {
+        setTooltipMessage("You must select a location");
+      } else if (!selectedTime.from || !selectedTime.to) {
+        setTooltipMessage("You must select a time slot");
+      } else {
+        setTooltipMessage("");
+      }
+      setShowTooltip(true);
+    };
+  
+    const handleMouseLeave = () => {
+      setShowTooltip(false);
+    };
+  
     return (
       <div className="time-picker">
         <h4>Select time for {selectedDate.toDateString()}</h4>
@@ -275,10 +278,8 @@ const BookDesk: React.FC = () => {
             }
           >
             <option value="">Select time</option>
-            {availableFromHours.map((hour) => (
-              <option key={hour} value={hour}>
-                {hour}
-              </option>
+            {availableFromHours.map(hour => (
+              <option key={hour} value={hour}>{hour}</option>
             ))}
           </select>
         </label>
@@ -291,26 +292,37 @@ const BookDesk: React.FC = () => {
             }
           >
             <option value="">Select time</option>
-            {availableToHours.map((hour) => (
-              <option key={hour} value={hour}>
-                {hour}
-              </option>
+            {availableToHours.map(hour => (
+              <option key={hour} value={hour}>{hour}</option>
             ))}
           </select>
         </label>
-        <button onClick={() => handlePath()}
+        <div className="tooltip-container"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+        <button
+          onClick={() => handlePath()}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           className={`button__timepicker ${isButtonDisabled ? "disabled" : ""}`}
           disabled={isButtonDisabled}
         >
           Search
         </button>
+        {showTooltip && tooltipMessage && (
+          <div className="tooltip">
+            {tooltipMessage}
+          </div>
+        )}
+        </div>
       </div>
     );
   };
 
   return (
     <>
-      <div className="bookDesk">
+      <div className="bookDesk" style={{ width: "100%", height: "100%" }}>
         <div className="bookDesk__title">Book a Desk</div>
         <div className="bookDesk__page">
           <div className="bookDesk__top">

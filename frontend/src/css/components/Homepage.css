@@ -1,14 +1,14 @@
 .homepage{
     position: relative;
     background-color: #fff;
-    margin-left: 2%;
+    /* margin-left: 2%;
     margin-right: 2%;
     margin-top: 2%;
-    margin-bottom: 2%;
+    margin-bottom: 2%; */
     border-radius: 10px;
     display: flex;
     height: 70%;
-    width: 96%;
+    width: 100%;
     flex-direction: column;
 }
 
@@ -21,39 +21,46 @@
     height: 15%
   }
   
-  .homepage__clock {
+  /* .homepage__clock {
     height: 25px;
-  }
+  } */
   
-  .homepage__datetime {
+  /* .homepage__datetime {
     color: #000;
-    margin-left: 2%; /* Ajustează margin-left pentru a adăuga spațiu între elemente */
+    margin-left: 2%;
     font-size: 100%;
-  }
+  } */
 
 .homepage__text{
     margin-left: 4%;
     margin-top: 2%;
-    font-size: 200%;
+    font-size: 2vw;
     font-weight: 300;
     height: 20%;
 }
 
 .homepage__information{
-    font-size: 150%;
-    margin-top: 10%;
+    font-size: 1.2vw;
+    margin-top: 8%;
     margin-left: 4%;
     height: 20%;
 }
 
+.homepage__changeStatus{
+    font-size: 0.8vw;
+    margin-top: 2%;
+    margin-left: 4%;
+    height: 5%;
+}
+
 .homepage__button{
     color: #1F4593;
-    font-size: 100%;
+    font-size: 0.8vw;
     margin-left: 4%;
-    margin-top: 2%;
+    /* margin-top: 1%; */
     cursor: pointer;
-    height: 10%;
-    width: 15%;
+    height: 8%;
+    width: 12%;
     border-radius: 10px;
     background-color: #fff;
     border: 1px solid #1F4593;
@@ -74,8 +81,9 @@
 .foto__calendar{
     height: 18%;
     width: 8%;
+    margin-top: 2%;
 }
 
 .information{
-    font-size: 100%;
+    font-size: 1vw;
 }

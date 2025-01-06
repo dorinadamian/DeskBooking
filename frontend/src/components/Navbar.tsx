@@ -33,9 +33,9 @@ const Navbar: React.FC = () => {
       >
         <svg
           className="navbar__svg"
-          width="40"
-          height="40"
-          viewBox="0 0 55 55"
+          width="30"
+          height="30"
+          viewBox="0 0 50 50"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -54,9 +54,9 @@ const Navbar: React.FC = () => {
       >
         <svg
           className="navbar__svg"
-          width="40"
-          height="40"
-          viewBox="0 0 55 55"
+          width="30"
+          height="30"
+          viewBox="0 0 50 50"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -75,9 +75,9 @@ const Navbar: React.FC = () => {
       >
         <svg
           className="navbar__svg"
-          width="40"
-          height="40"
-          viewBox="0 0 55 55"
+          width="30"
+          height="30"
+          viewBox="0 0 50 50"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -94,9 +94,9 @@ const Navbar: React.FC = () => {
       <div onClick={handleNavigate} className="navbar__button lastElement">
         <svg
           className="navbar__svg"
-          width="40"
-          height="40"
-          viewBox="0 0 55 55"
+          width="30"
+          height="30"
+          viewBox="0 0 50 50"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >

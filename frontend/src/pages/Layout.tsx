@@ -22,7 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       ) : null}
       <div className="layout">
       {routeWithElements.includes(location.pathname as RoutesPathList) ? (
-        <div className="navbar">
+        <div className="navbar" style={{width: '16%', paddingTop: '1.2%', paddingBottom: '1.2%'}}>
           <Navbar />
         </div>
       ) : null}

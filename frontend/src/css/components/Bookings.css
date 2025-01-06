@@ -4,20 +4,21 @@
 
 .bookings__title {
   display: flex;
-  font-size: 300%;
+  font-size: 2.5vw;
   font-weight: 500;
   align-items: center;
-  height: 10%;
-  padding-top: 1.5rem;
-  margin-left: 2%;
+  height: 5%;
+  margin-bottom: 1%;
+  /* padding-top: 1.5rem; */
+  /* margin-left: 2%; */
 }
 
 .bookings__information {
   position: relative;
   background-color: #fff;
-  margin-top: 2rem;
-  margin-left: 2%;
-  margin-right: 2%;
+  /* margin-top: 2rem; */
+  /* margin-left: 2%; */
+  /* margin-right: 2%; */
   border-radius: 10px;
   height: 50%;
 }

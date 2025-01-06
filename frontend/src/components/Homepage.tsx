@@ -43,6 +43,7 @@ const Homepage: React.FC = () => {
           <div className="homepage__information">
             You are working remotely today.
           </div>
+          <div className="homepage__changeStatus"> Isn't it right?</div>
           <button onClick={() => handlePath(0, "bookdesk")} className="homepage__button">Change your status</button>
         </div>
 

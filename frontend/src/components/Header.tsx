@@ -26,7 +26,6 @@ const Header: React.FC = () => {
           "Dec",
         ];
   
-        const dayOfWeek = daysOfWeek[now.getDay()];
         const month = months[now.getMonth()];
         const day = now.getDate().toString().padStart(2, "0");
         const year = now.getFullYear();
@@ -34,7 +33,7 @@ const Header: React.FC = () => {
         const hours = now.getHours().toString().padStart(2, "0");
         const minutes = now.getMinutes().toString().padStart(2, "0");
   
-        const formattedDateTime = `${hours}:${minutes}, ${dayOfWeek}/${day}/${month}/${year}`;
+        const formattedDateTime = `${day} ${month} ${year} | ${hours}:${minutes}`;
         setDateTime(formattedDateTime);
       };
   
