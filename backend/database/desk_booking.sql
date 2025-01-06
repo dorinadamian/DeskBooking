@@ -109,7 +109,7 @@ BEGIN
     -- Insert desks for each location
     WHILE locCount <= (SELECT COUNT(*) FROM tblLocation) DO
         SET i = 1;
-        WHILE i <= 50 DO
+        WHILE i <= 40 DO
             INSERT INTO tblDesk(deskNumber, availability, location) VALUES(i, 'FREE', locCount);
             SET i = i + 1;
         END WHILE;
@@ -194,3 +194,10 @@ INSERT INTO tblLocation (country, city) VALUES
     ('Germany', 'Berlin');
 
 CALL InsertDesks();
+
+INSERT INTO tblBooking(bookingDate, startTime, endTime, employee, desk) VALUES
+    ('2025-01-23', '10:00:00', '15:00:00', 1, 1),
+    ('2025-01-27', '09:00:00', '18:00:00', 1, 2),
+    ('2025-01-28', '09:00:00', '15:00:00', 2, 1),
+    ('2025-02-23', '10:00:00', '18:00:00', 2, 44),
+    ('2025-01-21', '10:00:00', '15:00:00', 2, 4);

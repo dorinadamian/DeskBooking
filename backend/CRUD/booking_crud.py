@@ -50,3 +50,19 @@ def delete_booking(id):
     db.session.delete(booking)
     db.session.commit()
     return jsonify({'message': 'Booking deleted'})
+
+# Get bookings for a specific employee
+@app.route('/bookings/employee/<int:employee_id>', methods=['GET'])
+def get_bookings_by_employee(employee_id):
+    bookings = db.session.query(Booking, Desk, Location).join(Desk, Booking.desk == Desk.idDesk).join(Location, Desk.location == Location.idLocation).filter(Booking.employee == employee_id).order_by(Booking.bookingDate.asc()).all()
+    result = []
+    for booking, desk, location in bookings:
+        result.append({
+            'id': booking.idBooking,
+            'desk': desk.deskNumber,
+            'location': f"{location.city}, {location.country}",
+            'date': booking.bookingDate.strftime('%d/%m/%Y'),
+            'from': booking.startTime.strftime('%H:%M'),  # 24H format
+            'to': booking.endTime.strftime('%H:%M')
+        })
+    return jsonify(result)

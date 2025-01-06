@@ -1,33 +1,22 @@
-import React from "react";
-
-const bookingsData = [
-  {
-    id: 1,
-    desk: 225,
-    location: "Iuliu Maniu, 56",
-    date: "12/11/2024",
-    from: "12:00 PM",
-    to: "14:00 PM",
-  },
-  {
-    id: 2,
-    desk: 225,
-    location: "Iuliu Maniu, 56",
-    date: "12/11/2024",
-    from: "12:00 PM",
-    to: "14:00 PM",
-  },
-  {
-    id: 3,
-    desk: 225,
-    location: "Iuliu Maniu, 56",
-    date: "12/11/2024",
-    from: "12:00 PM",
-    to: "14:00 PM",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { fetchBookingsByEmployee } from "../utils/api";
 
 const Bookings: React.FC = () => {
+  const [bookings, setBookings] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const idEmployee = localStorage.getItem('idEmployee');
+      if (idEmployee) {
+        const bookings = await fetchBookingsByEmployee(Number(idEmployee));
+        setBookings(bookings);
+      }
+    };
+
+    fetchBookings();
+    console.log(bookings);
+  }, []);
+
   return (
     <div className="bookings">
       <div className="bookings__title">Your Bookings</div>
@@ -41,7 +30,7 @@ const Bookings: React.FC = () => {
           <span className="bookings__information1">Actions</span>
         </div>
         <div className="bookings__table">
-          {bookingsData.map((booking, index) => (
+          {bookings.map((booking, index) => (
             <div
               className={`bookings__row ${index % 2 === 0 ? "even" : "odd"}`}
               key={booking.id}

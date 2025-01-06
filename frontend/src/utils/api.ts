@@ -57,3 +57,13 @@ export const fetchLocations = async () => {
     return {};
   }
 };
+
+export const fetchBookingsByEmployee = async (employeeId: number) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/bookings/employee/${employeeId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    return [];
+  }
+};
