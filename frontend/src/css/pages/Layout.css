@@ -1,0 +1,12 @@
+.layout {
+  display: flex;
+  height: calc(100vh - 3.5rem); /* Înălțimea totală minus înălțimea header-ului */
+}
+
+.content {
+  flex: 1;
+  background-color: #ebebeb;
+  overflow-y: auto;
+  height: 100%;
+  padding: 1.2%;
+}

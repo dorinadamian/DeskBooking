@@ -1,0 +1,369 @@
+.bookDesk {
+  height: 100%;
+}
+
+.bookDesk__title {
+  display: flex;
+  font-size: 2.5vw;
+  font-weight: 500;
+  align-items: center;
+  height: 5%;
+  margin-bottom: 1%;
+  /* padding-top: 1.5rem; */
+  /* margin-left: 2%; */
+}
+
+.bookDesk__page {
+  position: relative;
+  display: flex;
+  flex-direction: column; /* Împarte pe verticală */
+  gap: 6%;
+  background-color: #fff;
+  border-radius: 10px;
+  width: 100%;
+  height: 92.8%; /* 100 - 5 - 1 - 1.2 */
+  min-height: 34rem; /* Setează înălțimea minimă */
+  padding: 3%; /* Adaugă padding pentru a asigura spațiul egal */
+  box-sizing: border-box; /* Include padding-ul și marginile în dimensiunile totale */
+}
+
+.bookDesk__top {
+  flex: 0 0 30%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.bookDesk__bottom {
+  flex: 1; /* 70% din înălțimea containerului */
+  display: flex;
+  gap: 2%; /* Spațiere între elemente */
+}
+
+.bookDesk__right {
+  flex: 1;
+  border-radius: 10px;
+  /* padding: 15px; */
+  position: relative;
+  /* margin-top: 2.5rem; Ajustează marginea de sus pentru aliniere */
+}
+
+.bookDesk__choose {
+  display: flex;
+  width: 100%;
+  gap: 2%;
+}
+
+.name {
+  margin-bottom: 1%;
+  font-size: 0.9vw;
+  color: #2d2d2d;
+}
+
+.bookDesk__type {
+  width: 150px;
+  color: #2d2d2d;
+  font-size: 22px;
+}
+
+.dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-header {
+  border: 1px solid #ccc;
+  padding: 3%;
+  gap: 1px;
+  width: 100%;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  font-size: 0.8vw;
+  /* border: 1px solid blue; */
+}
+
+.dropdown-arrow {
+  height: 11%;
+  margin-top: 3%;
+  width: 10%;
+}
+
+.dropdown-list {
+  list-style: none;
+  width: 100%;
+  margin: 0;
+  padding: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  background: #fff;
+  font-size: 15px;
+}
+
+.dropdown-item:hover {
+  background: #f0f0f0;
+}
+
+.dropdown-item.selected {
+  background: #e6e6e6;
+  font-weight: bold;
+}
+
+/* Container general pentru calendar */
+.calendar {
+  /* margin-left: 1.5rem; */
+  display: flex;
+  flex-direction: column;
+  padding: 1.5%;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  height: 400px;
+  max-width: 400px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Headerul calendarului */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.calendar-header button {
+  background-color: #1f4593;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.calendar-header button:hover {
+  background-color: #1f4593;
+}
+
+.calendar-header h3 {
+  margin: 0;
+  font-size: 0.9vw;
+  font-weight: bold;
+}
+
+/* Grila calendarului */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 40px);
+  padding: 0;
+  margin: 0;
+  gap: 5px;
+  width: 100%;
+  justify-content: center;
+  grid-template-rows: repeat(auto-fit, 40px);
+}
+
+/* Zilele săptămânii */
+.calendar-day-name {
+  font-weight: bold;
+  text-align: center;
+  padding: 5px 0;
+  color: #555;
+}
+
+/* Celulele calendarului */
+.calendar-day {
+  width: 100%; /* Ajustează lățimea pentru a ocupa corect spațiul */
+  aspect-ratio: 1; /* Asigură o formă pătrată fără să folosești height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  background-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.calendar-day.inactive {
+  pointer-events: none;
+  opacity: 0.5;
+  color: gray;
+}
+
+.calendar-day:hover {
+  background-color: #f0f0f0;
+}
+
+.calendar-day.selected {
+  background-color: #1f4593;
+  color: white;
+}
+
+/* Zilele goale dinainte de prima zi */
+.calendar-day.empty {
+  visibility: hidden;
+}
+
+.popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffcccb; /* Fundal roșu deschis pentru avertizare */
+  color: #000;
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.progress-bar {
+  width: 100%;
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress {
+  width: 100%;
+  height: 5px;
+  background-color: #606360;
+  animation: progress-animation 4s linear backwards;
+}
+
+@keyframes progress-animation {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Selectorul de timp */
+.time-picker {
+  padding: 2%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 320px;
+  width: 70%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.time-picker h4 {
+  margin-bottom: 4%;
+  font-size: 1vw;
+  font-weight: bold;
+  color: #333;
+}
+
+.z {
+  display: flex;
+  justify-content: space-between;
+}
+
+.time-picker label {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9vw;
+}
+
+.time-picker select option {
+  padding: 2%;
+}
+
+.time-picker select {
+  padding: 1%;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+  max-height: 50px; /* Înălțimea vizibilă a listei deschise */
+  overflow-y: auto;
+}
+
+.time-picker select:focus {
+  border-color: #1f4593;
+  outline: none;
+}
+
+.button__timepicker {
+  align-self: center; /* Centrează butonul pe orizontală */
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 1% 3%;
+  border: none;
+  background-color: #1f4593;
+  color: #fff;
+  font-size: 1vw;
+}
+
+.button__timepicker.disabled {
+  background-color: #788eb9; /* Culoare pentru buton dezactivat */
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.tooltip-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4%;
+}
+
+.tooltip {
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 2%;
+  z-index: 1;
+  opacity: 0.9;
+  white-space: normal;
+  width: 100%;
+  top: 120%; /* Ajustează poziția tooltip-ului */
+  left: 50%;
+  transform: translateX(-50%);
+  word-wrap: break-word;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: 100%; /* Săgeata va fi în partea de sus a tooltip-ului */
+  left: 47%; /* Ajustează poziția săgeții */
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent #555 transparent;
+}
