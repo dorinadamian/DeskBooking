@@ -58,12 +58,34 @@ export const fetchLocations = async () => {
   }
 };
 
+export const fetchLocationId = async (country: string, city: string) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/locations/id`, {
+      params: { country, city }
+    });
+    return response.data.idLocation;
+  } catch (error) {
+    console.error("Error fetching location ID:", error);
+    return null;
+  }
+};
+
 export const fetchBookingsByEmployee = async (employeeId: number) => {
   try {
     const response = await axios.get(`http://localhost:5000/bookings/employee/${employeeId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching bookings:", error);
+    return [];
+  }
+};
+
+export const fetchDesksByLocation = async (locationId: number) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/desks/location/${locationId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching desks:", error);
     return [];
   }
 };

@@ -14,8 +14,6 @@ const BookDesk: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
-  const [tooltipMessage, setTooltipMessage] = useState("");
-  const [showTooltip, setShowTooltip] = useState(false);
 
   const handlePath = () => {
     navigate('/search'); // Navighează către "/search"
@@ -332,9 +330,11 @@ const BookDesk: React.FC = () => {
                 <Dropdown
                   options={countries}
                   selectedOption={selectedCountry}
+    
                   onOptionSelect={(country) => {
                     setSelectedCountry(country);
                     setSelectedLocation(""); // Reset location when country changes
+                    localStorage.setItem('selectedCountry', country); // Salvează țara selectată în localStorage
                   }}
                 />
               </div>
@@ -343,7 +343,10 @@ const BookDesk: React.FC = () => {
                 <Dropdown
                   options={locations[selectedCountry] || []}
                   selectedOption={selectedLocation}
-                  onOptionSelect={setSelectedLocation}
+                  onOptionSelect={(location) => {
+                    setSelectedLocation(location);
+                    localStorage.setItem('selectedLocation', location); // Salvează locația selectată în localStorage
+                  }}
                   disabled={!selectedCountry}
                 />
               </div>

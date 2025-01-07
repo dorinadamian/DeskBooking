@@ -46,7 +46,6 @@ CREATE TABLE tblLocation(
 CREATE TABLE tblDesk(
     idDesk INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     deskNumber INT NOT NULL,
-    availability ENUM ('Free', 'Busy') NOT NULL,
     location INT NOT NULL,
     CONSTRAINT fk_location FOREIGN KEY(location)
         REFERENCES tblLocation(idLocation) ON DELETE CASCADE ON UPDATE CASCADE
@@ -110,7 +109,7 @@ BEGIN
     WHILE locCount <= (SELECT COUNT(*) FROM tblLocation) DO
         SET i = 1;
         WHILE i <= 40 DO
-            INSERT INTO tblDesk(deskNumber, availability, location) VALUES(i, 'FREE', locCount);
+            INSERT INTO tblDesk(deskNumber, location) VALUES(i, locCount);
             SET i = i + 1;
         END WHILE;
         SET locCount = locCount + 1;
@@ -118,6 +117,25 @@ BEGIN
 END;
 //
 
+CREATE PROCEDURE CheckAvailableDesks(
+    IN bookingDate DATE,
+    IN startTime TIME,
+    IN endTime TIME
+)
+BEGIN
+    SELECT d.idDesk, d.deskNumber, d.location
+    FROM tblDesk d
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM tblBooking b
+        WHERE b.desk = d.idDesk
+        AND b.bookingDate = bookingDate
+        AND (
+            (startTime < b.endTime AND endTime > b.startTime)
+        )
+    );
+END;
+//
 DELIMITER ;
 
 
@@ -201,3 +219,5 @@ INSERT INTO tblBooking(bookingDate, startTime, endTime, employee, desk) VALUES
     ('2025-01-28', '09:00:00', '15:00:00', 2, 1),
     ('2025-02-23', '10:00:00', '18:00:00', 2, 44),
     ('2025-01-21', '10:00:00', '15:00:00', 2, 4);
+
+CALL CheckAvailableDesks('2025-01-23', '10:00:00', '15:00:00');

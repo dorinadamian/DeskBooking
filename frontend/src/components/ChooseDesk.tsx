@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchDesksByLocation, fetchLocationId } from "../utils/api";
 
 const ChooseDesk: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCell, setSelectedCell] = useState<number | null>(null);
+  const [desks, setDesks] = useState<any[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState(localStorage.getItem('selectedCountry') || "");
+  const [selectedLocation, setSelectedLocation] = useState(localStorage.getItem('selectedLocation') || "");
 
   const handlePath = () => {
     navigate("/bookdesk");
@@ -13,10 +17,26 @@ const ChooseDesk: React.FC = () => {
     setSelectedCell(cellIndex);
   };
 
-//   const closeModal = () => {
-//     setSelectedCell(null);
-//   };
+  useEffect(() => {
+    const fetchDesks = async () => {
+      if (selectedCountry && selectedLocation) {
+        const locationId = await fetchLocationId(selectedCountry, selectedLocation);
+        console.log(locationId);
+        if (locationId) {
+          const desks = await fetchDesksByLocation(locationId);
+          setDesks(desks);
+        }
+      }
+    };
 
+    fetchDesks();
+  }, [selectedCountry, selectedLocation]);
+
+  // Împarte birourile în grupuri de câte 10
+  const deskGroups = [];
+  for (let i = 0; i < desks.length; i += 10) {
+    deskGroups.push(desks.slice(i, i + 10));
+  }
 
   return (
     <div className="chooseDesk">
@@ -36,91 +56,32 @@ const ChooseDesk: React.FC = () => {
       </div>
       <div className="chooseDesk__title">Choose a desk</div>
       <div className="chooseDesk__information">
-        <div className="office-desk">
-          {[...Array(5)].map((_, rowIndex) => (
-            <div key={rowIndex} className="desk-row">
-              {[...Array(2)].map((_, colIndex) => {
-                const cellIndex = 100 + rowIndex * 2 + colIndex;
-                return (
-                  <div key={colIndex} className="desk-cell">
-                    <div
-                      className="dot"
-                      onClick={() => handleDotClick(cellIndex)}
-                    ></div>
-                    <span className="desk-number">{cellIndex}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-
-        <div className="office-desk">
-          {[...Array(5)].map((_, rowIndex) => (
-            <div key={rowIndex} className="desk-row">
-              {[...Array(2)].map((_, colIndex) => {
-                const cellIndex = 110 + rowIndex * 2 + colIndex;
-                return (
-                  <div key={colIndex} className="desk-cell">
-                    <div
-                      className="dot"
-                      onClick={() => handleDotClick(cellIndex)}
-                    ></div>
-                    <span className="desk-number">{cellIndex}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-
-          {/* {selectedCell !== null && (
-            <div className="modal">
-              <div className="modal-content">
-                <h3>Cell {selectedCell} Details</h3>
-                <p>You clicked on cell {selectedCell}.</p>
-                <button onClick={closeModal}>Close</button>
+        {deskGroups.map((group, groupIndex) => (
+          <div className="office-desk">
+            {[...Array(5)].map((_, rowIndex) => (
+              <div key={rowIndex} className="desk-row">
+                {[...Array(2)].map((_, colIndex) => {
+                  const deskIndex = rowIndex + colIndex * 5;
+                  const desk = group[deskIndex];
+                  console.log("desks", desks);
+                  return (
+                    <div key={colIndex} className="desk-cell">
+                      {desk && (
+                        <>
+                          <div
+                            className="dot"
+                            onClick={() => handleDotClick(desk.idDesk)}
+                          ></div>
+                          <span className="desk-number">{desk.deskNumber}</span>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            </div>
-          )} */}
-        </div>
-
-        <div className="office-desk">
-          {[...Array(5)].map((_, rowIndex) => (
-            <div key={rowIndex} className="desk-row">
-              {[...Array(2)].map((_, colIndex) => {
-                const cellIndex = 120 + rowIndex * 2 + colIndex;
-                return (
-                  <div key={colIndex} className="desk-cell">
-                    <div
-                      className="dot"
-                      onClick={() => handleDotClick(cellIndex)}
-                    ></div>
-                    <span className="desk-number">{cellIndex}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-
-        <div className="office-desk">
-          {[...Array(5)].map((_, rowIndex) => (
-            <div key={rowIndex} className="desk-row">
-              {[...Array(2)].map((_, colIndex) => {
-                const cellIndex = 130 + rowIndex * 2 + colIndex;
-                return (
-                  <div key={colIndex} className="desk-cell">
-                    <div
-                      className="dot"
-                      onClick={() => handleDotClick(cellIndex)}
-                    ></div>
-                    <span className="desk-number">{cellIndex}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
