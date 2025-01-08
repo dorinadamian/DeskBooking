@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Configure the database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/deskBookingDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/deskBookingDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy and Marshmallow
