@@ -74,7 +74,7 @@ const Landing: React.FC = () => {
               </div>
               </form>
               {error && <div className="error-message">{error}</div>}
-              <a href="#" className="forgot-password">
+              <a href="#" className="forgot-password" onClick={() => navigate('/reset-password')}>
                 Forgot password?
               </a>
               <button onClick={handleNavigate} className="login-btn">

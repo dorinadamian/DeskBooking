@@ -14,5 +14,19 @@ def login():
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 
+@app.route('/reset-password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    email = data.get('email')
+    new_password = data.get('newPassword')
+
+    account = Account.query.filter_by(email=email).first()
+    if account:
+        account.password = new_password
+        db.session.commit()
+        return jsonify({"message": "Password reset successful"}), 200
+    else:
+        return jsonify({"message": "Account not found"}), 404
+
 if __name__ == '__main__':
     app.run(debug=True)
