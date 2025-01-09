@@ -89,3 +89,15 @@ export const fetchDesksByLocation = async (locationId: number) => {
     return [];
   }
 };
+
+export const fetchReservations = async (bookingDate: string, startTime: string, endTime: string, locationId: number) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/bookings/filter`, {
+      params: { bookingDate, startTime, endTime, locationId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    return [];
+  }
+};

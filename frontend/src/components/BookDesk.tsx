@@ -9,6 +9,7 @@ const BookDesk: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>({ from: "", to: "" });
   const [showTimePicker, setShowTimePicker] = useState(true);
   const [warningMessage, setWarningMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
@@ -16,7 +17,7 @@ const BookDesk: React.FC = () => {
   const [year, setYear] = useState(new Date().getFullYear());
 
   const handlePath = () => {
-    navigate('/search'); // Navighează către "/search"
+    navigate('/search',  { state: { selectedDate, selectedTime, selectedCountry, selectedLocation } });
   };
 
   useEffect(() => {
@@ -214,7 +215,6 @@ const BookDesk: React.FC = () => {
   }, [showPopup]);
 
   const TimePicker = ({ selectedDate }: { selectedDate: Date }) => {
-    const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>({ from: "", to: "" });
     const [availableFromHours, setAvailableFromHours] = useState<string[]>([]);
     const [availableToHours, setAvailableToHours] = useState<string[]>([]);
     const [tooltipMessage, setTooltipMessage] = useState<string>("");
@@ -330,7 +330,6 @@ const BookDesk: React.FC = () => {
                 <Dropdown
                   options={countries}
                   selectedOption={selectedCountry}
-    
                   onOptionSelect={(country) => {
                     setSelectedCountry(country);
                     setSelectedLocation(""); // Reset location when country changes

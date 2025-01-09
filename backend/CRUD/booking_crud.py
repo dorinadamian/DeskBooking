@@ -66,3 +66,31 @@ def get_bookings_by_employee(employee_id):
             'to': booking.endTime.strftime('%H:%M')
         })
     return jsonify(result)
+
+# Get bookings for a specific location, date, and time range
+@app.route('/bookings/filter', methods=['GET'])
+def get_bookings_filtered():
+    booking_date = request.args.get('bookingDate')
+    start_time = request.args.get('startTime')
+    end_time = request.args.get('endTime')
+    location_id = request.args.get('locationId')
+
+    bookings = db.session.query(Booking, Desk, Employee).join(Desk, Booking.desk == Desk.idDesk).join(Employee, Booking.employee == Employee.idEmployee).filter(
+        Booking.bookingDate == booking_date,
+        Booking.startTime < end_time,
+        Booking.endTime > start_time,
+        Desk.location == location_id
+    ).all()
+
+    result = []
+    for booking, desk, employee in bookings:
+        result.append({
+            'idBooking': booking.idBooking,
+            'deskNumber': desk.deskNumber,
+            'firstName': employee.firstName,
+            'lastName': employee.lastName,
+            'bookingDate': booking.bookingDate.strftime('%d-%m-%Y'),
+            'startTime': booking.startTime.strftime('%H:%M'),
+            'endTime': booking.endTime.strftime('%H:%M')
+        })
+    return jsonify(result)
