@@ -97,16 +97,14 @@ const BookDesk: React.FC = () => {
   };
    
   const Calendar = () => {
-    const currentDate = new Date(); // Data curentă
-    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Numărul de zile din lună
-    let firstDay = new Date(year, month, 1).getDay(); // Prima zi a lunii (0 = Duminică, 1 = Luni, etc.)
-
-    // Ajustare pentru 1 ianuarie 2025
+    const currentDate = new Date(); 
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); 
+    let firstDay = new Date(year, month, 1).getDay(); 
+    
     if (year === 2025 && month === 0) {
-      firstDay = 3; // 3 corespunde zilei de miercuri
+      firstDay = 3; 
     }
 
-    // Dacă prima zi este 0 (Duminică), mutăm la 7 pentru a începe cu Luni
     if (firstDay === 0) {
       firstDay = 7;
     }
@@ -189,7 +187,7 @@ const BookDesk: React.FC = () => {
     if (selectedDate) {
       const now = new Date();
       const currentHour = now.getHours();
-      const nowDateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`; // Formatează data curentă în format YYYY-M-D
+      const nowDateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
       const isToday = selectedDate.toString() === nowDateString;
 
       if (isToday && currentHour >= 18) {
@@ -209,7 +207,7 @@ const BookDesk: React.FC = () => {
     if (showPopup) {
       const timer = setTimeout(() => {
         setShowPopup(false);
-      }, 4000); // Dispare după 4 secunde
+      }, 4000); 
       return () => clearTimeout(timer);
     }
   }, [showPopup]);
@@ -332,8 +330,8 @@ const BookDesk: React.FC = () => {
                   selectedOption={selectedCountry}
                   onOptionSelect={(country) => {
                     setSelectedCountry(country);
-                    setSelectedLocation(""); // Reset location when country changes
-                    localStorage.setItem('selectedCountry', country); // Salvează țara selectată în localStorage
+                    setSelectedLocation(""); 
+                    localStorage.setItem('selectedCountry', country); 
                   }}
                 />
               </div>
@@ -344,7 +342,7 @@ const BookDesk: React.FC = () => {
                   selectedOption={selectedLocation}
                   onOptionSelect={(location) => {
                     setSelectedLocation(location);
-                    localStorage.setItem('selectedLocation', location); // Salvează locația selectată în localStorage
+                    localStorage.setItem('selectedLocation', location); 
                   }}
                   disabled={!selectedCountry}
                 />

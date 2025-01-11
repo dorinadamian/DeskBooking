@@ -12,7 +12,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const location = useLocation();
 
-  const routeWithElements = [RoutesPathList.Today, RoutesPathList.BookDesk, RoutesPathList.Bookings, RoutesPathList.ChooseDesk]
+  const routeWithElements = [RoutesPathList.Today, RoutesPathList.BookDesk, RoutesPathList.Bookings, RoutesPathList.ChooseDesk, RoutesPathList.HomePage]
   
 
   return (

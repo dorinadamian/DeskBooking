@@ -1,89 +1,65 @@
-.homepage{
-    position: relative;
-    background-color: #fff;
-    /* margin-left: 2%;
-    margin-right: 2%;
-    margin-top: 2%;
-    margin-bottom: 2%; */
-    border-radius: 10px;
-    display: flex;
-    height: 70%;
-    width: 100%;
-    flex-direction: column;
+.homepage__total {
+  display: flex;
+  flex-direction: column;
+  height: 80%;
+  align-items: center;
 }
 
-.homepage__header {
-    display: flex;
-    flex-direction: row; /* Dispune elementele pe același rând */
-    align-items: center; /* Centrează elementele pe verticală */
-    margin-left: 4%;
-    margin-top: 2%;
-    height: 15%
-  }
-  
-  /* .homepage__clock {
-    height: 25px;
-  } */
-  
-  /* .homepage__datetime {
-    color: #000;
-    margin-left: 2%;
-    font-size: 100%;
-  } */
-
-.homepage__text{
-    margin-left: 4%;
-    margin-top: 2%;
-    font-size: 2vw;
-    font-weight: 300;
-    height: 20%;
+.homepage {
+  position: relative;
+  background-color: #fff;
+  border-radius: 10px;
+  display: flex;
+  height: 70%;
+  width: 100%;
+  flex-direction: column;
 }
 
-.homepage__information{
-    font-size: 1.2vw;
-    margin-top: 8%;
-    margin-left: 4%;
-    height: 20%;
+.homepage__text {
+  margin-left: 4%;
+  margin-top: 2%;
+  font-size: 2vw;
+  font-weight: 300;
+  height: 20%;
 }
 
-.homepage__changeStatus{
-    font-size: 0.8vw;
-    margin-top: 2%;
-    margin-left: 4%;
-    height: 5%;
+.homepage__information {
+  font-size: 1.2vw;
+  margin-top: 8%;
+  margin-left: 4%;
+  height: 20%;
 }
 
-.homepage__button{
-    color: #1F4593;
-    font-size: 0.8vw;
-    margin-left: 4%;
-    /* margin-top: 1%; */
-    cursor: pointer;
-    height: 8%;
-    width: 12%;
-    border-radius: 10px;
-    background-color: #fff;
-    border: 1px solid #1F4593;
+.homepage__changeStatus {
+  font-size: 0.8vw;
+  margin-top: 2%;
+  margin-left: 4%;
+  height: 5%;
 }
 
-.homepage__button:hover{
-    background-color: #1F4593;
-    color: #fff;
+.homepage__button {
+  color: #c4a15a;
+  font-size: 0.8vw;
+  margin-left: 4%;
+  cursor: pointer;
+  height: 8%;
+  width: 12%;
+  border-radius: 10px;
+  background-color: #fff;
+  border: 1px solid #c4a15a;
 }
 
-.homepage__total{
-    display: flex;
-    flex-direction: column;
-    height: 80%;
-    align-items: center;
+.homepage__button:hover {
+  background-color: #c4a15a;
+  color: #fff;
 }
 
-.foto__calendar{
-    height: 18%;
-    width: 8%;
-    margin-top: 2%;
+.foto__calendar {
+  height: 18%;
+  width: 8%;
+  margin-top: 2%;
 }
 
-.information{
-    font-size: 1vw;
+.information {
+  font-size: 1vw;
 }

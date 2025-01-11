@@ -6,6 +6,7 @@
 @import 'pages/Layout';
 @import 'components/Bookings';
 @import 'components/ChooseDesk';
+@import 'components/HomePage2.css';
 
 .style{
     display: flex;

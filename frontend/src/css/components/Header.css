@@ -9,7 +9,6 @@
 .header__logo {
   position: absolute;
   left: 0;
-  /* margin-top: 0.5rem; */
   margin-left: 2rem;
   width: 3rem;
   height: 3rem;
@@ -23,27 +22,18 @@
   font-weight: 500;
 }
 
-.header__name {
-  /* margin-top: 1rem; */
-  font-size: 24px;
-  margin-left: 0;
-  color: #fff;
-  font-weight: 500;
-  text-align: center;
-}
-
 .header__right {
   display: flex;
   position: absolute;
   right: 0;
-  align-items: center; /* Center elements vertically */
+  align-items: center;
   margin-right: 2rem;
 }
 
 .header__datetime {
   color: #fff;
   font-size: 18px;
-  margin-right: 1rem; /* Add space between datetime and circle */
+  margin-right: 1rem;
 }
 
 .circle {
