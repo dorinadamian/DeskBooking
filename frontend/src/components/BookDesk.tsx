@@ -81,12 +81,17 @@ const BookDesk: React.FC = () => {
     if (overlap && overlap.booking) {
       await deleteBooking(overlap.booking.id);
       setShowPopup(false);
-      navigate('/search', { state: { selectedDate, selectedTime, selectedCountry, selectedLocation } });
+      navigate('/search', { state: { selectedDate, selectedTime, selectedCountry, selectedCity } });
     }
   };
 
   const handleNoClick = () => {
     setShowPopup(false);
+  };
+
+  const isWeekday = (date: Date) => {
+    const day = date.getDay();
+    return day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
   };
 
   useEffect(() => {
@@ -226,6 +231,7 @@ const BookDesk: React.FC = () => {
           ))}
           {Array.from({ length: daysInMonth }, (_, i) => {
             const day = i + 1;
+            const date = new Date(year, month, day);
             const isPast =
               year < currentDate.getFullYear() ||
               (year === currentDate.getFullYear() &&
@@ -233,10 +239,13 @@ const BookDesk: React.FC = () => {
               (year === currentDate.getFullYear() &&
                 month === currentDate.getMonth() &&
                 day < currentDate.getDate());
+
+                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+
             return (
               <div
                 key={i}
-                className={`calendar-day ${isPast ? "inactive" : ""} ${
+                className={`calendar-day ${isPast || isWeekend ? "inactive" : ""} ${
                   selectedDate === `${year}-${month + 1}-${day}` ? "selected" : ""
                 }`}
                 onClick={() => handleDayClick(day, isPast)}
@@ -402,7 +411,7 @@ const BookDesk: React.FC = () => {
             {showPopup && (
               <div className="bookdesk-popup-overlay">
                 <div className="bookdesk-popup-content">
-                  <p>{warningMessage} <br></br>Do you want to delete it?</p>
+                  <p>{warningMessage} <br></br>Do you want to delete it and continue?</p>
                   {showButtons && (
                     <div className="bookdesk-popup-buttons">
                       <button className="yes-button" onClick={handleYesClick}>Yes</button>

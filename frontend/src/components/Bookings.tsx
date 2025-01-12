@@ -83,13 +83,12 @@ const Bookings: React.FC = () => {
       await deleteBooking(bookingToDelete.id);
       setShowDeletePopup(false);
       setBookingToDelete(null);
-      // Refresh bookings
+
       const idEmployee = localStorage.getItem('idEmployee');
       if (idEmployee) {
         const bookings = await fetchBookingsByEmployee(Number(idEmployee));
         setBookings(bookings);
       }
-      // Show success popup
       setShowSuccessPopup(true);
       setTimeout(() => {
         setShowSuccessPopup(false);
@@ -102,12 +101,10 @@ const Bookings: React.FC = () => {
     setBookingToDelete(null);
   };
 
-  // Calcularea rezervărilor de afișat pe baza paginii curente
   const indexOfLastBooking = currentPage * bookingsPerPage;
   const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
   const currentBookings = bookings.slice(indexOfFirstBooking, indexOfLastBooking);
 
-  // Funcția pentru schimbarea paginii
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
@@ -195,7 +192,7 @@ const Bookings: React.FC = () => {
                 ))}
               </select>
               <div className="bookings-popup-buttons">
-                <button className="bookings-popup-button update" onClick={handleUpdateBooking}>Update Booking</button>
+                <button className="bookings-popup-button update" onClick={handleUpdateBooking}>Update</button>
                 <button className="bookings-popup-button cancel" onClick={() => setShowPopup(false)}>Cancel</button>
               </div>
             </div>
@@ -218,7 +215,7 @@ const Bookings: React.FC = () => {
       {showSuccessPopup && (
         <div className="bookings-success-popup">
           <div className="bookings-success-popup-content">
-            <p>Booking deleted successfully!</p>
+            <p>Booking updated successfully!</p>
             <div className="progress-bar">
               <div className="progress"></div>
             </div>

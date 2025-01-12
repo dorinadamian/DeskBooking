@@ -23,6 +23,7 @@ const ChooseDesk: React.FC = () => {
   const [deskId, setDeskId] = useState<any[]>([]);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [madeReservation, setMadeReservation] = useState(false);
+  const [showWarningPopup, setShowWarningPopup] = useState(false);
   const [hoverInfo, setHoverInfo] = useState<{
     visible: boolean;
     content: any;
@@ -39,13 +40,20 @@ const ChooseDesk: React.FC = () => {
   };
 
   const handleDotClick = (desk: any) => {
-    setModalInfo({ visible: true, desk });
     setShowSuccessPopup(false);
+    if (madeReservation) {
+      setShowWarningPopup(true);
+      setTimeout(() => {
+        setShowWarningPopup(false);
+      }, 2000);
+    } else {
+      setModalInfo({ visible: true, desk });
+    }
   };
 
   const handleBookDesk = async () => {
     const idEmployee = localStorage.getItem("idEmployee");
-    
+    setMadeReservation(true);
     if (modalInfo.desk) {
       const newReservation = {
         "employee": idEmployee,
@@ -64,7 +72,7 @@ const ChooseDesk: React.FC = () => {
         setTimeout(() => {
           setShowSuccessPopup(false);
         }, 2000);
-        navigate('/booking');
+        navigate('/search', { state: { selectedDate, selectedTime, selectedCountry, selectedCity } });
       } catch (error) {
         console.error('Error booking desk:', error);
       }
@@ -262,6 +270,16 @@ const ChooseDesk: React.FC = () => {
             <p>Desk booked successfully</p>
             <div className="progress-bar">
               <div className="progress"></div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showWarningPopup && (
+        <div className="bookings-warning-popup">
+          <div className="bookings-warning-popup-content">
+            <p>You have already booked a desk</p>
+            <div className="progress-bar-warning">
+              <div className="progress-warning"></div>
             </div>
           </div>
         </div>
