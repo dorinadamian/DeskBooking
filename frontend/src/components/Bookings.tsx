@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { fetchBookingsByEmployee } from "../utils/api";
+import React, { useState, useEffect, useRef } from "react";
+import { fetchBookingsByEmployee, fetchDesksByLocation, fetchReservations, fetchLocationId, updateBooking, deleteBooking } from "../utils/api";
 
 const Bookings: React.FC = () => {
   const [bookings, setBookings] = useState<any[]>([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [availableDesks, setAvailableDesks] = useState<any[]>([]);
+  const [selectedDesk, setSelectedDesk] = useState<number | null>(null);
+  const [currentBooking, setCurrentBooking] = useState<any>(null);
+  const [bookingToDelete, setBookingToDelete] = useState<any>(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -14,8 +21,87 @@ const Bookings: React.FC = () => {
     };
 
     fetchBookings();
-    console.log(bookings);
   }, []);
+
+  const handleEditClick = async (booking: any) => {
+    setShowSuccessPopup(false); // Ascunde popup-ul de succes și resetează timeout-ul
+
+    const [city, country] = booking.location.split(', ').map((part: string) => part.trim());
+
+    // Convert date from DD/MM/YYYY to YYYY-MM-DD
+    const [day, month, year] = booking.date.split('/');
+    const formattedDate = `${year}-${month}-${day}`;
+
+    const locationId = await fetchLocationId(country, city);
+    if (locationId) {
+      const availableDesks = await fetchDesksByLocation(locationId);
+      const reservations = await fetchReservations(formattedDate, booking.from, booking.to, locationId);
+      const availableDesksFiltered = availableDesks.filter((desk: any) => 
+        !reservations.some((reservation: any) => reservation.deskNumber === desk.deskNumber)
+      );
+
+      setAvailableDesks(availableDesksFiltered);
+      setCurrentBooking(booking);
+      setShowPopup(true);
+    }
+  };
+
+  const handleDeskChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedDesk(Number(event.target.value));
+  };
+
+  const handleUpdateBooking = async () => {
+    if (currentBooking && selectedDesk) {
+      const [day, month, year] = currentBooking.date.split('/');
+      const formattedDate = `${year}-${month}-${day}`;
+      const updatedBooking = await updateBooking(currentBooking.id, formattedDate, currentBooking.from, currentBooking.to, selectedDesk);
+      if (updatedBooking) {
+        setShowPopup(false);
+        setSelectedDesk(null);
+        setCurrentBooking(null);
+        // Refresh bookings
+        const idEmployee = localStorage.getItem('idEmployee');
+        if (idEmployee) {
+          const bookings = await fetchBookingsByEmployee(Number(idEmployee));
+          setBookings(bookings);
+        }
+        // Show success popup
+        setShowSuccessPopup(true);
+        setTimeout(() => {
+          setShowSuccessPopup(false);
+        }, 4000);
+      }
+    }
+  };
+
+  const handleDeleteClick = (booking: any) => {
+    setBookingToDelete(booking);
+    setShowDeletePopup(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (bookingToDelete) {
+      await deleteBooking(bookingToDelete.id);
+      setShowDeletePopup(false);
+      setBookingToDelete(null);
+      // Refresh bookings
+      const idEmployee = localStorage.getItem('idEmployee');
+      if (idEmployee) {
+        const bookings = await fetchBookingsByEmployee(Number(idEmployee));
+        setBookings(bookings);
+      }
+      // Show success popup
+      setShowSuccessPopup(true);
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 4000);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeletePopup(false);
+    setBookingToDelete(null);
+  };
 
   return (
     <div className="bookings">
@@ -41,7 +127,7 @@ const Bookings: React.FC = () => {
               <span className="bookings__cell4">{booking.from}</span>
               <span className="bookings__cell4">{booking.to}</span>
               <span className="bookings__cell4">
-                <button className="edit">
+                <button className="edit" onClick={() => handleEditClick(booking)}>
                   <svg
                     width="30"
                     height="30"
@@ -55,7 +141,7 @@ const Bookings: React.FC = () => {
                     />
                   </svg>
                 </button>
-                <button className="delete">
+                <button className="delete" onClick={() => handleDeleteClick(booking)}>
                   <svg
                     width="33"
                     height="33"
@@ -74,6 +160,50 @@ const Bookings: React.FC = () => {
           ))}
         </div>
       </div>
+      {showPopup && (
+        <div className="bookings-popup-overlay">
+          <div className="bookings-popup">
+            <div className="bookings-popup-content">
+              <h3>Choose a new desk</h3>
+              <select onChange={handleDeskChange} value={selectedDesk || ""}>
+                <option value="" disabled>Select a desk</option>
+                {availableDesks.map((desk: any) => (
+                  <option key={desk.idDesk} value={desk.idDesk}>
+                    Desk {desk.deskNumber}
+                  </option>
+                ))}
+              </select>
+              <div className="bookings-popup-buttons">
+                <button className="bookings-popup-button update" onClick={handleUpdateBooking}>Update Booking</button>
+                <button className="bookings-popup-button cancel" onClick={() => setShowPopup(false)}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showDeletePopup && (
+        <div className="bookings-popup-overlay">
+          <div className="bookings-popup">
+            <div className="bookings-popup-content">
+              <h3>Are you sure you want to delete this booking?</h3>
+              <div className="bookings-popup-buttons">
+                <button className="bookings-popup-button delete" onClick={handleConfirmDelete}>Yes</button>
+                <button className="bookings-popup-button cancel" onClick={handleCancelDelete}>No</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showSuccessPopup && (
+        <div className="bookings-success-popup">
+          <div className="bookings-success-popup-content">
+            <p>Booking deleted successfully!</p>
+            <div className="progress-bar">
+              <div className="progress"></div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

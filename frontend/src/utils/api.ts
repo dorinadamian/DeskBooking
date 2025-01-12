@@ -106,41 +106,39 @@ export const fetchReservations = async (bookingDate: string, startTime: string, 
   }
 };
 
-// Add the following functions for AdminDashboard
-export const fetchUsers = async () => {
+export const checkBookingOverlap = async (employeeId: number, bookingDate: string, startTime: string, endTime: string, locationId: number) => {
   try {
-    const response = await axios.get('http://localhost:5000/admin/users');
+    const response = await axios.get('http://localhost:5000/bookings/check-overlap', {
+      params: { employeeId, bookingDate, startTime, endTime, locationId }
+    });
     return response.data;
   } catch (error) {
-    console.error("Error fetching users:", error);
-    return [];
+    console.error("Error checking booking overlap:", error);
+    return { overlap: false };
   }
 };
 
-export const addUser = async (user: { email: string, password: string, role: string, employee: number | null }) => {
+export const updateBooking = async (bookingId: number, bookingDate: string, startTime: string, endTime: string, deskId: number) => {
   try {
-    const response = await axios.post('http://localhost:5000/admin/users', user);
+    const response = await axios.put(`http://localhost:5000/bookings/${bookingId}`, {
+      bookingDate,
+      startTime,
+      endTime,
+      deskId
+    });
     return response.data;
   } catch (error) {
-    console.error("Error adding user:", error);
+    console.error("Error updating booking:", error);
     return null;
   }
 };
 
-export const updateUser = async (id: number, user: { email: string, password: string, role: string, employee: number | null }) => {
+export const deleteBooking = async (bookingId: number) => {
   try {
-    const response = await axios.put(`http://localhost:5000/admin/users/${id}`, user);
+    const response = await axios.delete(`http://localhost:5000/bookings/${bookingId}`);
     return response.data;
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error("Error deleting booking:", error);
     return null;
-  }
-};
-
-export const deleteUser = async (id: number) => {
-  try {
-    await axios.delete(`http://localhost:5000/admin/users/${id}`);
-  } catch (error) {
-    console.error("Error deleting user:", error);
   }
 };

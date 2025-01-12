@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from script.models import *
+from datetime import *
 
 # Get all bookings
 @app.route('/bookings', methods=['GET'])
@@ -38,8 +39,7 @@ def update_booking(id):
     booking.bookingDate = data['bookingDate']
     booking.startTime = data['startTime']
     booking.endTime = data['endTime']
-    booking.employee = data['employee']
-    booking.desk = data['desk']
+    booking.desk = data['deskId']
     db.session.commit()
     return booking_schema.jsonify(booking)
 
@@ -94,3 +94,45 @@ def get_bookings_filtered():
             'endTime': booking.endTime.strftime('%H:%M')
         })
     return jsonify(result)
+
+@app.route('/bookings/check-overlap', methods=['GET'])
+def check_booking_overlap():
+    employee_id = request.args.get('employeeId')
+    booking_date = request.args.get('bookingDate')
+    start_time = request.args.get('startTime')
+    end_time = request.args.get('endTime')
+    location_id = request.args.get('locationId')
+
+    overlapping_bookings = db.session.query(Booking, Desk, Location).join(Desk, Booking.desk == Desk.idDesk).join(Location, Desk.location == Location.idLocation).filter(
+        Booking.employee == employee_id,
+        Booking.bookingDate == booking_date,
+        Booking.startTime < end_time,
+        Booking.endTime > start_time
+    ).all()
+
+    if overlapping_bookings:
+        booking, desk, location = overlapping_bookings[0]
+        if location.idLocation != int(location_id):
+            return jsonify({
+                'overlap': True,
+                'message': f'You already have a booking in {location.city}, {location.country} and cannot have two bookings in different locations.',
+                'booking': {
+                    'id': booking.idBooking,
+                    'startTime': booking.startTime.strftime('%H:%M'),
+                    'endTime': booking.endTime.strftime('%H:%M'),
+                    'location': location.city,
+                    'country': location.country
+                }
+            })
+        return jsonify({
+            'overlap': True,
+            'booking': {
+                'id': booking.idBooking,
+                'startTime': booking.startTime.strftime('%H:%M'),
+                'endTime': booking.endTime.strftime('%H:%M'),
+                'location': location.city,
+                'country': location.country
+            }
+        })
+    else:
+        return jsonify({'overlap': False})

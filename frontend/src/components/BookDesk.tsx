@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchCountries, fetchLocations } from "../utils/api";
+import { fetchCountries, fetchLocations, checkBookingOverlap, fetchLocationId, fetchReservations, updateBooking } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 const BookDesk: React.FC = () => {
@@ -15,9 +15,103 @@ const BookDesk: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [overlap, setOverlap] = useState<{ overlap: boolean, booking: any } | null>(null);
+  const [showButtons, setShowButtons] = useState(true);
+  const [showProgressBar, setShowProgressBar] = useState(true);
+  const [popupType, setPopupType] = useState<"warning" | "success">("warning");
 
-  const handlePath = () => {
-    navigate('/search',  { state: { selectedDate, selectedTime, selectedCountry, selectedLocation } });
+  useEffect(() => {
+    if (selectedDate) {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const nowDateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`; // Formatează data curentă în format YYYY-M-D
+      const isToday = selectedDate.toString() === nowDateString;
+
+      if (isToday && currentHour >= 18) {
+        setShowTimePicker(false);
+        setWarningMessage("You can no longer book a desk for today.");
+        setPopupType("warning");
+        setShowPopup(true);
+        setSelectedDate(null);
+      } else {
+        setShowTimePicker(true);
+        setWarningMessage("");
+        setShowPopup(false);
+      }
+    }
+  }, [selectedDate]);
+
+  useEffect(() => {
+    if (showPopup && !showButtons) {
+      setIsButtonDisabled(true);
+      setShowProgressBar(true); // Afișează bara de progres când butoanele nu sunt vizibile
+      const timer = setTimeout(() => {
+        setShowPopup(false);
+        setIsButtonDisabled(false);
+      }, 4000); // Dispare după 4 secunde
+
+      return () => clearTimeout(timer); // Curăță timer-ul anterior
+    } else if (showButtons) {
+      setShowProgressBar(false); // Ascunde bara de progres când butoanele sunt vizibile
+    }
+  }, [showPopup, selectedTime, showButtons]);
+
+  const handlePath = async () => {
+    const idEmployee = localStorage.getItem('idEmployee');
+    if (idEmployee && selectedDate && selectedTime.from && selectedTime.to) {
+      const locationId = await fetchLocationId(selectedCountry, selectedLocation);
+      if (locationId) {
+        const overlap = await checkBookingOverlap(Number(idEmployee), selectedDate, selectedTime.from, selectedTime.to, locationId);
+        if (overlap.overlap) {
+          setOverlap(overlap);
+          setWarningMessage(overlap.message || `You already have a booking from ${overlap.booking.startTime} to ${overlap.booking.endTime} at ${overlap.booking.location}, ${overlap.booking.country}. Do you want to update it?`);
+          setPopupType("warning");
+          if (overlap.message) {
+            setShowButtons(false); // Ascunde butoanele "Yes" și "No" pentru mesajul de locații diferite
+            setShowPopup(false); // Ascunde pop-up-ul pentru a reseta timer-ul
+            setTimeout(() => {
+              setShowPopup(true); // Afișează din nou pop-up-ul
+            }, 0);
+          } else {
+            setShowButtons(true); // Afișează butoanele "Yes" și "No" pentru alte mesaje
+            setShowPopup(false); // Ascunde pop-up-ul pentru a reseta timer-ul
+            setTimeout(() => {
+              setShowPopup(true); // Afișează din nou pop-up-ul
+            }, 0);
+          }
+          return;
+        }
+      }
+    }
+    setShowButtons(false); // Setează `showButtons` la `false` pentru alte popup-uri
+    navigate('/search', { state: { selectedDate, selectedTime, selectedCountry, selectedLocation } });
+  };
+
+  const handleYesClick = async () => {
+    const idEmployee = localStorage.getItem('idEmployee');
+    if (idEmployee && selectedDate && selectedTime.from && selectedTime.to && overlap) {
+      const locationId = await fetchLocationId(selectedCountry, selectedLocation);
+      if (locationId) {
+        const reservations = await fetchReservations(selectedDate, selectedTime.from, selectedTime.to, locationId);
+        const deskId = reservations.find((reservation: { idBooking: number; deskNumber: number }) => reservation.idBooking === overlap.booking.id)?.deskNumber;
+        console.log(reservations);
+        if (overlap.overlap) {
+          await updateBooking(overlap.booking.id, selectedDate, selectedTime.from, selectedTime.to, deskId);
+          setWarningMessage("Booking updated successfully.");
+          setPopupType("success");
+          setShowPopup(true);
+          setShowButtons(false);
+          setTimeout(() => {
+            setShowPopup(false);
+          }, 4000);
+        }
+      }
+    }
+  };
+
+  const handleNoClick = () => {
+    setShowPopup(false);
   };
 
   useEffect(() => {
@@ -183,35 +277,6 @@ const BookDesk: React.FC = () => {
     );
   };
 
-  useEffect(() => {
-    if (selectedDate) {
-      const now = new Date();
-      const currentHour = now.getHours();
-      const nowDateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-      const isToday = selectedDate.toString() === nowDateString;
-
-      if (isToday && currentHour >= 18) {
-        setShowTimePicker(false);
-        setWarningMessage("You can no longer book a desk for today.");
-        setShowPopup(true);
-        setSelectedDate(null);
-      } else {
-        setShowTimePicker(true);
-        setWarningMessage("");
-        setShowPopup(false);
-      }
-    }
-  }, [selectedDate, warningMessage, showTimePicker]);
-
-  useEffect(() => {
-    if (showPopup) {
-      const timer = setTimeout(() => {
-        setShowPopup(false);
-      }, 4000); 
-      return () => clearTimeout(timer);
-    }
-  }, [showPopup]);
-
   const TimePicker = ({ selectedDate }: { selectedDate: Date }) => {
     const [availableFromHours, setAvailableFromHours] = useState<string[]>([]);
     const [availableToHours, setAvailableToHours] = useState<string[]>([]);
@@ -243,7 +308,7 @@ const BookDesk: React.FC = () => {
       }
     }, [selectedTime.from]);
   
-    const isButtonDisabled = !selectedTime.from || !selectedTime.to || !selectedCountry || !selectedLocation;
+    setIsButtonDisabled(!selectedTime.from || !selectedTime.to || !selectedCountry || !selectedLocation);
   
     const handleMouseEnter = () => {
       if ((!selectedCountry || !selectedLocation) && (!selectedTime.from || !selectedTime.to)) {
@@ -359,11 +424,19 @@ const BookDesk: React.FC = () => {
               </div>
             )}
             {showPopup && (
-              <div className="popup">
+              <div className={`popup ${popupType === "success" ? "popup-success" : "popup-warning"}`}>
                 <p>{warningMessage}</p>
-                <div className="progress-bar">
-                  <div className="progress"></div>
-                </div>
+                {showButtons && (
+                  <div className="popup-buttons">
+                    <button onClick={handleYesClick}>Yes</button>
+                    <button onClick={handleNoClick}>No</button>
+                  </div>
+                )}
+                {showProgressBar && (
+                  <div className="progress-bar">
+                    <div className="progress"></div>
+                  </div>
+                )}
               </div>
             )}
           </div>

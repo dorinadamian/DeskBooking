@@ -349,3 +349,32 @@
   border-style: solid;
   border-color: transparent transparent #555 transparent;
 }
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.popup-buttons button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1f4593;
+  color: white;
+}
+
+.popup-buttons button:hover {
+  background-color: #163a6f;
+}
+
+.popup-success {
+  background-color: #d4edda; /* Fundal verde deschis pentru succes */
+  color: #155724; /* Text verde închis pentru succes */
+}
+
+.popup-warning {
+  background-color: #ffcccb; /* Fundal roșu deschis pentru avertizare */
+  color: #721c24; /* Text roșu închis pentru avertizare */
+}
