@@ -5,6 +5,7 @@ import {
   fetchReservations,
   fetchLocationId,
 } from "../utils/api";
+import axios from 'axios';
 
 const ChooseDesk: React.FC = () => {
   const navigate = useNavigate();
@@ -13,12 +14,15 @@ const ChooseDesk: React.FC = () => {
     selectedDate,
     selectedTime,
     selectedCountry,
-    selectedLocation,
+    selectedCity,
     userFirstName,
     userLastName,
   } = location.state || {};
   const [desks, setDesks] = useState<any[]>([]);
   const [reservations, setReservations] = useState<any[]>([]);
+  const [deskId, setDeskId] = useState<any[]>([]);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [madeReservation, setMadeReservation] = useState(false);
   const [hoverInfo, setHoverInfo] = useState<{
     visible: boolean;
     content: any;
@@ -36,23 +40,34 @@ const ChooseDesk: React.FC = () => {
 
   const handleDotClick = (desk: any) => {
     setModalInfo({ visible: true, desk });
+    setShowSuccessPopup(false);
   };
 
-  const handleBookDesk = () => {
+  const handleBookDesk = async () => {
+    const idEmployee = localStorage.getItem("idEmployee");
+    
     if (modalInfo.desk) {
-      const updatedReservations = [
-        ...reservations,
-        {
-          deskNumber: modalInfo.desk.deskNumber,
-          firstName: userFirstName,
-          lastName: userLastName,
-          bookingDate: selectedDate,
-          startTime: selectedTime.from,
-          endTime: selectedTime.to,
-        },
-      ];
-      setReservations(updatedReservations); 
-      setModalInfo({ visible: false, desk: null }); 
+      const newReservation = {
+        "employee": idEmployee,
+        "desk": modalInfo.desk.idDesk,
+        "bookingDate": selectedDate,
+        "startTime": selectedTime.from,
+        "endTime": selectedTime.to
+      };
+
+      try {
+        const response = await axios.post('http://localhost:5000/bookings', newReservation);
+        const updatedReservations = [...reservations, newReservation];
+        setReservations(updatedReservations);
+        setModalInfo({ visible: false, desk: null });
+        setShowSuccessPopup(true);
+        setTimeout(() => {
+          setShowSuccessPopup(false);
+        }, 2000);
+        navigate('/booking');
+      } catch (error) {
+        console.error('Error booking desk:', error);
+      }
     }
   };
 
@@ -87,10 +102,10 @@ const ChooseDesk: React.FC = () => {
 
   useEffect(() => {
     const fetchDesks = async () => {
-      if (selectedCountry && selectedLocation) {
+      if (selectedCountry && selectedCity) {
         const locationId = await fetchLocationId(
           selectedCountry,
-          selectedLocation
+          selectedCity
         );
         if (locationId) {
           const desks = await fetchDesksByLocation(locationId);
@@ -100,10 +115,10 @@ const ChooseDesk: React.FC = () => {
     };
 
     const fetchReservationsData = async () => {
-      if (selectedCountry && selectedLocation && selectedDate && selectedTime) {
+      if (selectedCountry && selectedCity && selectedDate && selectedTime) {
         const locationId = await fetchLocationId(
           selectedCountry,
-          selectedLocation
+          selectedCity
         );
         if (locationId) {
           const reservations = await fetchReservations(
@@ -119,7 +134,7 @@ const ChooseDesk: React.FC = () => {
 
     fetchDesks();
     fetchReservationsData();
-  }, [selectedCountry, selectedLocation, selectedDate, selectedTime]);
+  }, [selectedCountry, selectedCity, selectedDate, selectedTime]);
 
   const deskGroups = [];
   for (let i = 0; i < desks.length; i += 10) {
@@ -213,7 +228,7 @@ const ChooseDesk: React.FC = () => {
             onClick={() => setModalInfo({ visible: false, desk: null })}
           ></div>
           <div className="modal-content">
-            <div>The desk is free. You can book it.</div>
+            <div>Desk {modalInfo.desk.deskNumber} is free. You can book it.</div>
             <button className="book-button" onClick={handleBookDesk}>
               BOOK
             </button>
@@ -241,6 +256,16 @@ const ChooseDesk: React.FC = () => {
           <span>Booked</span>
         </div>
       </div>
+      {showSuccessPopup && (
+        <div className="bookings-success-popup">
+          <div className="bookings-success-popup-content">
+            <p>Desk booked successfully</p>
+            <div className="progress-bar">
+              <div className="progress"></div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

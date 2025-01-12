@@ -12,7 +12,6 @@ const Header: React.FC = () => {
     const updateDateTime = () => {
       const now = new Date();
 
-      const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       const months = [
         "Jan",
         "Feb",

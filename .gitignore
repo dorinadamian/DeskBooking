@@ -1,1 +1,2 @@
-*.pyc
+backend/__pycache__/
+backend/CRUD/__pycache__/

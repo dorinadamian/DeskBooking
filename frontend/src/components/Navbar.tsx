@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { fetchBookingsByEmployee } from '../utils/api';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ const Navbar: React.FC = () => {
   const [path, setPath] = useState(1);
 
   useEffect(() => {
-    if (location.pathname === "/today") {
+    if (location.pathname === "/today" || location.pathname === "/homepage") {
       setPath(1);
     } else if (location.pathname === "/booking") {
       setPath(2);
@@ -16,7 +17,31 @@ const Navbar: React.FC = () => {
     }
   }, [location.pathname]);
 
-  const handlePath = (selectedPath: number, location: string) => {
+  const handlePath = async (selectedPath: number, location: string) => {
+    if (location === "today") {
+      console.log("today");
+      const idEmployee = localStorage.getItem('idEmployee');
+      if (idEmployee) {
+        const bookings = await fetchBookingsByEmployee(Number(idEmployee));
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        const today = `${day}/${month}/${year}`;
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+
+        const hasBookingToday = bookings.some((booking: any) => {
+          const [endHour, endMinute] = booking.to.split(':').map(Number);
+          const bookingEndTime = endHour * 60 + endMinute;
+          return booking.date === today && bookingEndTime > currentTime;
+        });
+
+        if (hasBookingToday) {
+          navigate('/homepage');
+          return;
+        }
+      }
+    }
     setPath(selectedPath);
     navigate(`/${location}`);
   };
@@ -89,28 +114,6 @@ const Navbar: React.FC = () => {
         </svg>
 
         <div className="navbar__text">Book a desk</div>
-      </div>
-
-      <div
-        onClick={() => handlePath(4, "homepage")}
-        className={`navbar__button ${path == 4 ? "active" : ""}`}
-      >
-        <svg
-          className="navbar__svg"
-          width="30"
-          height="30"
-          viewBox="0 0 50 50"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10.4167 45.8333C9.27083 45.8333 8.28993 45.4254 7.47396 44.6094C6.65799 43.7934 6.25 42.8125 6.25 41.6667V12.5C6.25 11.3542 6.65799 10.3733 7.47396 9.55729C8.28993 8.74132 9.27083 8.33333 10.4167 8.33333H12.5V4.16667H16.6667V8.33333H33.3333V4.16667H37.5V8.33333H39.5833C40.7292 8.33333 41.7101 8.74132 42.526 9.55729C43.342 10.3733 43.75 11.3542 43.75 12.5V41.6667C43.75 42.8125 43.342 43.7934 42.526 44.6094C41.7101 45.4254 40.7292 45.8333 39.5833 45.8333H10.4167ZM10.4167 41.6667H39.5833V20.8333H10.4167V41.6667ZM10.4167 16.6667H39.5833V12.5H10.4167V16.6667ZM14.5833 29.1667V25H35.4167V29.1667H14.5833ZM14.5833 37.5V33.3333H29.1667V37.5H14.5833Z"
-            fill="#788EB9"
-            className={`navbar__button ${path == 4 ? "active" : ""}`}
-          />
-        </svg>
-
-        <div className="navbar__text">Today Update</div>
       </div>
 
       <div onClick={handleNavigate} className="navbar__button lastElement">

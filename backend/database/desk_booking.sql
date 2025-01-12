@@ -136,6 +136,17 @@ BEGIN
     );
 END;
 //
+
+CREATE EVENT ev_remove_expired_bookings
+ON SCHEDULE EVERY 1 HOUR
+DO
+BEGIN
+    DELETE FROM tblBooking
+    WHERE bookingDate < CURDATE()
+    OR (bookingDate = CURDATE() AND endTime < CURTIME());
+END;
+//
+
 DELIMITER ;
 
 

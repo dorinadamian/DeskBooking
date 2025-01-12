@@ -48,14 +48,14 @@ export const fetchLocations = async () => {
   try {
     const response = await axios.get("http://localhost:5000/locations");
     const locations = response.data;
-    const locationsByCountry = locations.reduce((acc: { [key: string]: string[] }, location: { country: string, city: string }) => {
+    const citiesByCountry = locations.reduce((acc: { [key: string]: string[] }, location: { country: string, city: string }) => {
       if (!acc[location.country]) {
         acc[location.country] = [];
       }
       acc[location.country].push(location.city);
       return acc;
     }, {});
-    return locationsByCountry;
+    return citiesByCountry;
   } catch (error) {
     console.error("Error fetching locations:", error);
     return {};

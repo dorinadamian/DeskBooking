@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { fetchBookingsByEmployee, fetchDesksByLocation, fetchReservations, fetchLocationId, updateBooking, deleteBooking } from "../utils/api";
+import React, { useState, useEffect } from "react";
+import { fetchBookingsByEmployee, fetchLocationId, fetchDesksByLocation, fetchReservations, updateBooking, deleteBooking } from "../utils/api";
 
 const Bookings: React.FC = () => {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -10,6 +10,8 @@ const Bookings: React.FC = () => {
   const [selectedDesk, setSelectedDesk] = useState<number | null>(null);
   const [currentBooking, setCurrentBooking] = useState<any>(null);
   const [bookingToDelete, setBookingToDelete] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const bookingsPerPage = 5;
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -24,8 +26,7 @@ const Bookings: React.FC = () => {
   }, []);
 
   const handleEditClick = async (booking: any) => {
-    setShowSuccessPopup(false); // Ascunde popup-ul de succes și resetează timeout-ul
-
+    setShowSuccessPopup(false);
     const [city, country] = booking.location.split(', ').map((part: string) => part.trim());
 
     // Convert date from DD/MM/YYYY to YYYY-MM-DD
@@ -59,13 +60,11 @@ const Bookings: React.FC = () => {
         setShowPopup(false);
         setSelectedDesk(null);
         setCurrentBooking(null);
-        // Refresh bookings
         const idEmployee = localStorage.getItem('idEmployee');
         if (idEmployee) {
           const bookings = await fetchBookingsByEmployee(Number(idEmployee));
           setBookings(bookings);
         }
-        // Show success popup
         setShowSuccessPopup(true);
         setTimeout(() => {
           setShowSuccessPopup(false);
@@ -103,20 +102,28 @@ const Bookings: React.FC = () => {
     setBookingToDelete(null);
   };
 
+  // Calcularea rezervărilor de afișat pe baza paginii curente
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = bookings.slice(indexOfFirstBooking, indexOfLastBooking);
+
+  // Funcția pentru schimbarea paginii
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
   return (
     <div className="bookings">
       <div className="bookings__title">Your Bookings</div>
       <div className="bookings__information">
         <div className="bookings__line">
           <span className="bookings__information1">Desk</span>
-          <span className="bookings__information2">Location</span>
+          <span className="bookings__information1">Location</span>
           <span className="bookings__information1">Date</span>
           <span className="bookings__information1">From</span>
           <span className="bookings__information1">To</span>
           <span className="bookings__information1">Actions</span>
         </div>
         <div className="bookings__table">
-          {bookings.map((booking, index) => (
+          {currentBookings.map((booking, index) => (
             <div
               className={`bookings__row ${index % 2 === 0 ? "even" : "odd"}`}
               key={booking.id}
@@ -125,8 +132,8 @@ const Bookings: React.FC = () => {
               <span className="bookings__cell2">{booking.location}</span>
               <span className="bookings__cell3">{booking.date}</span>
               <span className="bookings__cell4">{booking.from}</span>
-              <span className="bookings__cell4">{booking.to}</span>
-              <span className="bookings__cell4">
+              <span className="bookings__cell5">{booking.to}</span>
+              <span className="bookings__cell6">
                 <button className="edit" onClick={() => handleEditClick(booking)}>
                   <svg
                     width="30"
@@ -159,6 +166,20 @@ const Bookings: React.FC = () => {
             </div>
           ))}
         </div>
+        {/* Butoane de paginare */}
+        {bookings.length > bookingsPerPage && (
+          <div className="pagination">
+            {Array.from({ length: Math.ceil(bookings.length / bookingsPerPage) }, (_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => paginate(index + 1)}
+                className={currentPage === index + 1 ? "active" : ""}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       {showPopup && (
         <div className="bookings-popup-overlay">
@@ -187,8 +208,8 @@ const Bookings: React.FC = () => {
             <div className="bookings-popup-content">
               <h3>Are you sure you want to delete this booking?</h3>
               <div className="bookings-popup-buttons">
-                <button className="bookings-popup-button delete" onClick={handleConfirmDelete}>Yes</button>
-                <button className="bookings-popup-button cancel" onClick={handleCancelDelete}>No</button>
+                <button className="bookings-popup-button delete" onClick={handleConfirmDelete}>YES</button>
+                <button className="bookings-popup-button cancel" onClick={handleCancelDelete}>NO</button>
               </div>
             </div>
           </div>

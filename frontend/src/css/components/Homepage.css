@@ -20,37 +20,37 @@
   margin-top: 2%;
   font-size: 2vw;
   font-weight: 300;
-  height: 20%;
+  height: 30%;
 }
 
 .homepage__information {
   font-size: 1.2vw;
-  margin-top: 8%;
+  margin-top: 2%;
   margin-left: 4%;
-  height: 20%;
+  height: 30%;
 }
 
 .homepage__changeStatus {
-  font-size: 0.8vw;
-  margin-top: 2%;
+  font-size: 0.9vw;
   margin-left: 4%;
-  height: 5%;
+  margin-top: auto;
 }
 
 .homepage__button {
-  color: #c4a15a;
+  color: #ffffff;
   font-size: 0.8vw;
   margin-left: 4%;
+  margin-bottom: 2%;
   cursor: pointer;
   height: 8%;
   width: 12%;
   border-radius: 10px;
-  background-color: #fff;
+  background-color: #c4a15a;
   border: 1px solid #c4a15a;
 }
 
 .homepage__button:hover {
-  background-color: #c4a15a;
+  background-color: #b18f4a;
   color: #fff;
 }
 

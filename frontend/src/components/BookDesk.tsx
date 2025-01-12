@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 const BookDesk: React.FC = () => {
   const navigate = useNavigate();
   const [countries, setCountries] = useState<string[]>([]);
-  const [locations, setLocations] = useState<{ [key: string]: string[] }>({});
+  const [cities, setCities] = useState<{ [key: string]: string[] }>({});
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>({ from: "", to: "" });
   const [showTimePicker, setShowTimePicker] = useState(true);
@@ -49,18 +49,18 @@ const BookDesk: React.FC = () => {
       const timer = setTimeout(() => {
         setShowPopup(false);
         setIsButtonDisabled(false);
-      }, 4000); // Dispare după 4 secunde
+      }, 4000);
 
-      return () => clearTimeout(timer); // Curăță timer-ul anterior
+      return () => clearTimeout(timer);
     } else if (showButtons) {
-      setShowProgressBar(false); // Ascunde bara de progres când butoanele sunt vizibile
+      setShowProgressBar(false); 
     }
   }, [showPopup, selectedTime, showButtons]);
 
   const handlePath = async () => {
     const idEmployee = localStorage.getItem('idEmployee');
     if (idEmployee && selectedDate && selectedTime.from && selectedTime.to) {
-      const locationId = await fetchLocationId(selectedCountry, selectedLocation);
+      const locationId = await fetchLocationId(selectedCountry, selectedCity);
       if (locationId) {
         const overlap = await checkBookingOverlap(Number(idEmployee), selectedDate, selectedTime.from, selectedTime.to, locationId);
         if (overlap.overlap) {
@@ -85,13 +85,13 @@ const BookDesk: React.FC = () => {
       }
     }
     setShowButtons(false); // Setează `showButtons` la `false` pentru alte popup-uri
-    navigate('/search', { state: { selectedDate, selectedTime, selectedCountry, selectedLocation } });
+    navigate('/search', { state: { selectedDate, selectedTime, selectedCountry, selectedCity } });
   };
 
   const handleYesClick = async () => {
     const idEmployee = localStorage.getItem('idEmployee');
     if (idEmployee && selectedDate && selectedTime.from && selectedTime.to && overlap) {
-      const locationId = await fetchLocationId(selectedCountry, selectedLocation);
+      const locationId = await fetchLocationId(selectedCountry, selectedCity);
       if (locationId) {
         const reservations = await fetchReservations(selectedDate, selectedTime.from, selectedTime.to, locationId);
         const deskId = reservations.find((reservation: { idBooking: number; deskNumber: number }) => reservation.idBooking === overlap.booking.id)?.deskNumber;
@@ -120,8 +120,8 @@ const BookDesk: React.FC = () => {
         const countries = await fetchCountries();
         setCountries(countries);
 
-        const locationsByCountry = await fetchLocations();
-        setLocations(locationsByCountry);
+        const citiesByCountry = await fetchLocations();
+        setCities(citiesByCountry);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -262,9 +262,7 @@ const BookDesk: React.FC = () => {
               <div
                 key={i}
                 className={`calendar-day ${isPast ? "inactive" : ""} ${
-                  selectedDate === `${year}-${month + 1}-${day}`
-                    ? "selected"
-                    : ""
+                  selectedDate === `${year}-${month + 1}-${day}` ? "selected" : ""
                 }`}
                 onClick={() => handleDayClick(day, isPast)}
               >
@@ -294,7 +292,6 @@ const BookDesk: React.FC = () => {
       } else {
         fromHours = Array.from({ length: 11 }, (_, i) => `${8 + i}:00`);
       }
-  
       setAvailableFromHours(fromHours);
     }, [selectedDate]);
   
@@ -308,12 +305,12 @@ const BookDesk: React.FC = () => {
       }
     }, [selectedTime.from]);
   
-    setIsButtonDisabled(!selectedTime.from || !selectedTime.to || !selectedCountry || !selectedLocation);
+    setIsButtonDisabled(!selectedTime.from || !selectedTime.to || !selectedCountry || !selectedCity);
   
     const handleMouseEnter = () => {
-      if ((!selectedCountry || !selectedLocation) && (!selectedTime.from || !selectedTime.to)) {
+      if ((!selectedCountry || !selectedCity) && (!selectedTime.from || !selectedTime.to)) {
         setTooltipMessage("You must select a location and a time slot first");
-      } else if (!selectedCountry && !selectedLocation) {
+      } else if (!selectedCountry && !selectedCity) {
         setTooltipMessage("You must select a location");
       } else if (!selectedTime.from || !selectedTime.to) {
         setTooltipMessage("You must select a time slot");
@@ -334,8 +331,10 @@ const BookDesk: React.FC = () => {
           From:
           <select
             value={selectedTime.from}
-            onChange={(e) =>
-              setSelectedTime({ ...selectedTime, from: e.target.value })
+            onChange={(e) => {
+                setSelectedTime({ ...selectedTime, from: e.target.value })
+                localStorage.setItem('selectedStartTime', selectedTime.from);
+              }
             }
           >
             <option value="">Select time</option>
@@ -348,8 +347,10 @@ const BookDesk: React.FC = () => {
           To:
           <select
             value={selectedTime.to}
-            onChange={(e) =>
-              setSelectedTime({ ...selectedTime, to: e.target.value })
+            onChange={(e) =>{
+                setSelectedTime({ ...selectedTime, to: e.target.value })
+                localStorage.setItem('selectedEndTime', selectedTime.to);
+              } 
             }
           >
             <option value="">Select time</option>
@@ -395,19 +396,19 @@ const BookDesk: React.FC = () => {
                   selectedOption={selectedCountry}
                   onOptionSelect={(country) => {
                     setSelectedCountry(country);
-                    setSelectedLocation(""); 
+                    setSelectedCity(""); 
                     localStorage.setItem('selectedCountry', country); 
                   }}
                 />
               </div>
               <div className="bookDesk__type">
-                <div className="name">Location</div>
+                <div className="name">City</div>
                 <Dropdown
-                  options={locations[selectedCountry] || []}
-                  selectedOption={selectedLocation}
-                  onOptionSelect={(location) => {
-                    setSelectedLocation(location);
-                    localStorage.setItem('selectedLocation', location); 
+                  options={cities[selectedCountry] || []}
+                  selectedOption={selectedCity}
+                  onOptionSelect={(city) => {
+                    setSelectedCity(city);
+                    localStorage.setItem('selectedCity', city); 
                   }}
                   disabled={!selectedCountry}
                 />
