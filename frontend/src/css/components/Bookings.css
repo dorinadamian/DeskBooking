@@ -97,3 +97,131 @@ button {
   background: none;
   cursor: pointer;
 }
+
+.bookings-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundal semi-transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.bookings-popup {
+  position: relative; /* Adaugă această linie */
+  top: -30%; /* Ajustează valoarea pentru a muta popup-ul mai sus */
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  text-align: center;
+}
+
+.bookings-popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bookings-popup-content h3 {
+  margin-bottom: 20px;
+}
+
+.bookings-popup-content select {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 50%;
+}
+
+.bookings-popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.bookings-popup-button {
+  margin: 5px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.bookings-popup-button.update {
+  background-color: #1f4593;
+  color: white;
+}
+
+.bookings-popup-button.update:hover {
+  background-color: #163a6f;
+}
+
+.bookings-popup-button.cancel {
+  background-color: #ccc;
+  color: black;
+}
+
+.bookings-popup-button.cancel:hover {
+  background-color: #999;
+}
+
+.bookings-popup-button.delete {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.bookings-popup-button.delete:hover {
+  background-color: #cc0000;
+}
+
+.bookings-success-popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #d4edda; /* Fundal verde deschis pentru succes */
+  color: #155724; /* Text verde închis pentru succes */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.bookings-success-popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-bar {
+  width: 100%;
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress {
+  width: 100%;
+  height: 5px;
+  background-color: #28a745;
+  animation: progress-animation 4s linear forwards;
+}
+
+@keyframes progress-animation {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
