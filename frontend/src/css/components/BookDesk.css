@@ -378,3 +378,63 @@
   background-color: #ffcccb; /* Fundal roșu deschis pentru avertizare */
   color: #721c24; /* Text roșu închis pentru avertizare */
 }
+
+.bookdesk-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundal semi-transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.bookdesk-popup-content {
+  position: relative;
+  top: -37%;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bookdesk-popup-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.bookdesk-popup-buttons button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1f4593;
+  color: white;
+}
+
+.bookdesk-popup-buttons button:hover {
+  background-color: #163a6f;
+}
+
+.bookdesk-popup-buttons .yes-button {
+  background-color: #c32121; /* Roșu */
+  color: white;
+}
+
+.bookdesk-popup-buttons .yes-button:hover {
+  background-color: #aa1d1d; /* Roșu închis */
+}
+
+.bookdesk-popup-buttons .no-button {
+  background-color: #ccc; /* Gri */
+  color: black;
+}
+
+.bookdesk-popup-buttons .no-button:hover {
+  background-color: #999; /* Gri închis */
+}

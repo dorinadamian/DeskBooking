@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchCountries, fetchLocations, checkBookingOverlap, fetchLocationId, fetchReservations, updateBooking } from "../utils/api";
+import { fetchCountries, fetchLocations, checkBookingOverlap, fetchLocationId, fetchReservations, updateBooking, deleteBooking } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 const BookDesk: React.FC = () => {
@@ -65,21 +65,10 @@ const BookDesk: React.FC = () => {
         const overlap = await checkBookingOverlap(Number(idEmployee), selectedDate, selectedTime.from, selectedTime.to, locationId);
         if (overlap.overlap) {
           setOverlap(overlap);
-          setWarningMessage(overlap.message || `You already have a booking from ${overlap.booking.startTime} to ${overlap.booking.endTime} at ${overlap.booking.location}, ${overlap.booking.country}. Do you want to update it?`);
+          setWarningMessage(`You already have a booking from ${overlap.booking.startTime} to ${overlap.booking.endTime} at ${overlap.booking.location}, ${overlap.booking.country}.`);
           setPopupType("warning");
-          if (overlap.message) {
-            setShowButtons(false); // Ascunde butoanele "Yes" și "No" pentru mesajul de locații diferite
-            setShowPopup(false); // Ascunde pop-up-ul pentru a reseta timer-ul
-            setTimeout(() => {
-              setShowPopup(true); // Afișează din nou pop-up-ul
-            }, 0);
-          } else {
-            setShowButtons(true); // Afișează butoanele "Yes" și "No" pentru alte mesaje
-            setShowPopup(false); // Ascunde pop-up-ul pentru a reseta timer-ul
-            setTimeout(() => {
-              setShowPopup(true); // Afișează din nou pop-up-ul
-            }, 0);
-          }
+          setShowButtons(true);
+          setShowPopup(true);
           return;
         }
       }
@@ -89,24 +78,10 @@ const BookDesk: React.FC = () => {
   };
 
   const handleYesClick = async () => {
-    const idEmployee = localStorage.getItem('idEmployee');
-    if (idEmployee && selectedDate && selectedTime.from && selectedTime.to && overlap) {
-      const locationId = await fetchLocationId(selectedCountry, selectedCity);
-      if (locationId) {
-        const reservations = await fetchReservations(selectedDate, selectedTime.from, selectedTime.to, locationId);
-        const deskId = reservations.find((reservation: { idBooking: number; deskNumber: number }) => reservation.idBooking === overlap.booking.id)?.deskNumber;
-        console.log(reservations);
-        if (overlap.overlap) {
-          await updateBooking(overlap.booking.id, selectedDate, selectedTime.from, selectedTime.to, deskId);
-          setWarningMessage("Booking updated successfully.");
-          setPopupType("success");
-          setShowPopup(true);
-          setShowButtons(false);
-          setTimeout(() => {
-            setShowPopup(false);
-          }, 4000);
-        }
-      }
+    if (overlap && overlap.booking) {
+      await deleteBooking(overlap.booking.id);
+      setShowPopup(false);
+      navigate('/search', { state: { selectedDate, selectedTime, selectedCountry, selectedLocation } });
     }
   };
 
@@ -425,19 +400,21 @@ const BookDesk: React.FC = () => {
               </div>
             )}
             {showPopup && (
-              <div className={`popup ${popupType === "success" ? "popup-success" : "popup-warning"}`}>
-                <p>{warningMessage}</p>
-                {showButtons && (
-                  <div className="popup-buttons">
-                    <button onClick={handleYesClick}>Yes</button>
-                    <button onClick={handleNoClick}>No</button>
-                  </div>
-                )}
-                {showProgressBar && (
-                  <div className="progress-bar">
-                    <div className="progress"></div>
-                  </div>
-                )}
+              <div className="bookdesk-popup-overlay">
+                <div className="bookdesk-popup-content">
+                  <p>{warningMessage} <br></br>Do you want to delete it?</p>
+                  {showButtons && (
+                    <div className="bookdesk-popup-buttons">
+                      <button className="yes-button" onClick={handleYesClick}>Yes</button>
+                      <button className="no-button" onClick={handleNoClick}>No</button>
+                    </div>
+                  )}
+                  {showProgressBar && (
+                    <div className="progress-bar">
+                      <div className="progress"></div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
