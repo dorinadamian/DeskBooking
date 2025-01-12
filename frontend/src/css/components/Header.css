@@ -9,41 +9,31 @@
 .header__logo {
   position: absolute;
   left: 0;
-  /* margin-top: 0.5rem; */
-  margin-left: 2rem;
+  margin-left: 1.8%;
   width: 3rem;
   height: 3rem;
 }
 
 .header__title {
   margin-top: 1rem;
-  margin-left: 5.2rem;
+  margin-left: 4.8%;
   color: #fff;
   font-size: 20px;
   font-weight: 500;
-}
-
-.header__name {
-  /* margin-top: 1rem; */
-  font-size: 24px;
-  margin-left: 0;
-  color: #fff;
-  font-weight: 500;
-  text-align: center;
 }
 
 .header__right {
   display: flex;
   position: absolute;
   right: 0;
-  align-items: center; /* Center elements vertically */
-  margin-right: 2rem;
+  align-items: center;
+  margin-right: 1.8%;
 }
 
 .header__datetime {
   color: #fff;
   font-size: 18px;
-  margin-right: 1rem; /* Add space between datetime and circle */
+  margin-right: 2rem;
 }
 
 .circle {
@@ -54,11 +44,40 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .circle__text {
-  font-size: 15px; 
+  font-size: 1vw; 
   color: black;
   font-weight: bold;
   text-align: center;
+}
+
+.employee-details {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 4%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  /* width: 100%; */
+}
+
+.employee-details__header {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 2%;
+}
+
+.employee-details__body {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.employee-details__body div {
+  margin-bottom: 2%;
 }

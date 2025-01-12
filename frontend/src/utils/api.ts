@@ -2,11 +2,15 @@ import axios from 'axios';
 
 export const fetchEmployeeName = async (employeeId: number) => {
   try {
-    const response = await axios.get(`http://localhost:5000/employees/${employeeId}`);
+    const response = await axios.get(`http://localhost:5000/employees/${employeeId}/details`);
     const employee = response.data;
     const initials = `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`;
     return {
       firstName: employee.firstName,
+      lastName: employee.lastName,
+      department: employee.department,
+      role: employee.role,
+      manager: employee.manager,
       initials: initials
     };
   } catch (error) {
@@ -99,5 +103,44 @@ export const fetchReservations = async (bookingDate: string, startTime: string, 
   } catch (error) {
     console.error("Error fetching reservations:", error);
     return [];
+  }
+};
+
+// Add the following functions for AdminDashboard
+export const fetchUsers = async () => {
+  try {
+    const response = await axios.get('http://localhost:5000/admin/users');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
+};
+
+export const addUser = async (user: { email: string, password: string, role: string, employee: number | null }) => {
+  try {
+    const response = await axios.post('http://localhost:5000/admin/users', user);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding user:", error);
+    return null;
+  }
+};
+
+export const updateUser = async (id: number, user: { email: string, password: string, role: string, employee: number | null }) => {
+  try {
+    const response = await axios.put(`http://localhost:5000/admin/users/${id}`, user);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return null;
+  }
+};
+
+export const deleteUser = async (id: number) => {
+  try {
+    await axios.delete(`http://localhost:5000/admin/users/${id}`);
+  } catch (error) {
+    console.error("Error deleting user:", error);
   }
 };

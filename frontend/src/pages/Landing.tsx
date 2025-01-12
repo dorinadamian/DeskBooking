@@ -23,9 +23,13 @@ const Landing: React.FC = () => {
     }
 
     try {
-      const { idEmployee } = await login(email, password);
+      const { idEmployee, role } = await login(email, password);
       localStorage.setItem('idEmployee', idEmployee);
-      navigate('/today');
+      if (role === 'Admin') {
+        // navigate('/admin');
+      } else {
+        navigate('/today');
+      }
     } catch (error) {
       setError((error as any).message);
     }

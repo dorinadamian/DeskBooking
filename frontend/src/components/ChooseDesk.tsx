@@ -1,46 +1,97 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { fetchDesksByLocation, fetchReservations, fetchLocationId } from "../utils/api";
+import {
+  fetchDesksByLocation,
+  fetchReservations,
+  fetchLocationId,
+} from "../utils/api";
 
 const ChooseDesk: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { selectedDate, selectedTime, selectedCountry, selectedLocation } = location.state || {};
+  const {
+    selectedDate,
+    selectedTime,
+    selectedCountry,
+    selectedLocation,
+    userFirstName,
+    userLastName,
+  } = location.state || {};
   const [desks, setDesks] = useState<any[]>([]);
   const [reservations, setReservations] = useState<any[]>([]);
-  const [hoverInfo, setHoverInfo] = useState<{ visible: boolean, content: any, x: number, y: number }>({ visible: false, content: "", x: 0, y: 0 });
+  const [hoverInfo, setHoverInfo] = useState<{
+    visible: boolean;
+    content: any;
+    x: number;
+    y: number;
+  }>({ visible: false, content: "", x: 0, y: 0 });
+  const [modalInfo, setModalInfo] = useState<{
+    visible: boolean;
+    desk: any | null;
+  }>({ visible: false, desk: null });
 
   const handlePath = () => {
     navigate("/bookdesk");
   };
 
-  const handleDotClick = () => {
+  const handleDotClick = (desk: any) => {
+    setModalInfo({ visible: true, desk });
+  };
 
+  const handleBookDesk = () => {
+    if (modalInfo.desk) {
+      const updatedReservations = [
+        ...reservations,
+        {
+          deskNumber: modalInfo.desk.deskNumber,
+          firstName: userFirstName,
+          lastName: userLastName,
+          bookingDate: selectedDate,
+          startTime: selectedTime.from,
+          endTime: selectedTime.to,
+        },
+      ];
+      setReservations(updatedReservations); 
+      setModalInfo({ visible: false, desk: null }); 
+    }
   };
 
   const handleMouseOver = (reservation: any, event: React.MouseEvent) => {
-    const { firstName, lastName, bookingDate, startTime, endTime } = reservation;
+    const { firstName, lastName, bookingDate, startTime, endTime } =
+      reservation;
     const content = (
       <div className="hover-content">
-        <div className="hover-header">{firstName} {lastName}</div>
+        <div className="hover-header">
+          {firstName} {lastName}
+        </div>
         <div className="hover-divider"></div>
         <div className="hover-details">
           <div>Date: {bookingDate}</div>
-          <div>Time slot: {startTime} - {endTime}</div>
+          <div>
+            Time slot: {startTime} - {endTime}
+          </div>
         </div>
       </div>
     );
-    setHoverInfo({ visible: true, content, x: event.clientX, y: event.clientY });
+    setHoverInfo({
+      visible: true,
+      content,
+      x: event.clientX,
+      y: event.clientY,
+    });
   };
 
   const handleMouseOut = () => {
-    setHoverInfo({ visible: false, content: '', x: 0, y: 0 });
+    setHoverInfo({ visible: false, content: "", x: 0, y: 0 });
   };
 
   useEffect(() => {
     const fetchDesks = async () => {
       if (selectedCountry && selectedLocation) {
-        const locationId = await fetchLocationId(selectedCountry, selectedLocation);
+        const locationId = await fetchLocationId(
+          selectedCountry,
+          selectedLocation
+        );
         if (locationId) {
           const desks = await fetchDesksByLocation(locationId);
           setDesks(desks);
@@ -50,9 +101,17 @@ const ChooseDesk: React.FC = () => {
 
     const fetchReservationsData = async () => {
       if (selectedCountry && selectedLocation && selectedDate && selectedTime) {
-        const locationId = await fetchLocationId(selectedCountry, selectedLocation);
+        const locationId = await fetchLocationId(
+          selectedCountry,
+          selectedLocation
+        );
         if (locationId) {
-          const reservations = await fetchReservations(selectedDate, selectedTime.from, selectedTime.to, locationId);
+          const reservations = await fetchReservations(
+            selectedDate,
+            selectedTime.from,
+            selectedTime.to,
+            locationId
+          );
           setReservations(reservations);
         }
       }
@@ -92,25 +151,37 @@ const ChooseDesk: React.FC = () => {
                 {[...Array(2)].map((_, colIndex) => {
                   const deskIndex = rowIndex + colIndex * 5;
                   const desk = group[deskIndex];
-                  const reservation = reservations.find((res) => res.deskNumber === desk.deskNumber);
+                  const reservation = reservations.find(
+                    (res) => res.deskNumber === desk.deskNumber
+                  );
                   return (
                     <div key={colIndex} className="desk-cell">
                       {desk && (
                         <>
                           <div
                             className="dot"
-                            style={{ backgroundColor: reservation ? "#788EB9" : "green" }}
-                            onClick={() => handleDotClick()}
+                            style={{
+                              backgroundColor: reservation
+                                ? "#788EB9"
+                                : "green",
+                            }}
+                            onClick={() => !reservation && handleDotClick(desk)}
                           >
-                            {reservation && reservation.firstName && reservation.lastName && (
-                              <span
-                                className="initials"
-                                onMouseOver={(event) => handleMouseOver(reservation, event)}
-                                onMouseOut={handleMouseOut}
-                              >
-                                {reservation.firstName.charAt(0)}{reservation.lastName.charAt(0)}
-                              </span>
-                            )}
+                            
+                            {reservation &&
+                              reservation.firstName &&
+                              reservation.lastName && (
+                                <span
+                                  className="initials"
+                                  onMouseOver={(event) =>
+                                    handleMouseOver(reservation, event)
+                                  }
+                                  onMouseOut={handleMouseOut}
+                                >
+                                  {reservation.firstName.charAt(0)}
+                                  {reservation.lastName.charAt(0)}
+                                </span>
+                              )}
                           </div>
                           <span className="desk-number">{desk.deskNumber}</span>
                         </>
@@ -123,6 +194,7 @@ const ChooseDesk: React.FC = () => {
           </div>
         ))}
       </div>
+
       {hoverInfo.visible && (
         <div
           className="hover-box"
@@ -134,6 +206,41 @@ const ChooseDesk: React.FC = () => {
           {hoverInfo.content}
         </div>
       )}
+      {modalInfo.visible && modalInfo.desk && (
+        <div className="modal">
+          <div
+            className="modal-overlay"
+            onClick={() => setModalInfo({ visible: false, desk: null })}
+          ></div>
+          <div className="modal-content">
+            <div>The desk is free. You can book it.</div>
+            <button className="book-button" onClick={handleBookDesk}>
+              BOOK
+            </button>
+            <button
+              className="book-button1"
+              onClick={() => setModalInfo({ visible: false, desk: null })}
+            >
+              CANCEL
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="legend">
+        <div className="legend-item">
+          <div className="dot" style={{ backgroundColor: "green" }}></div>
+          <span>Available</span>
+        </div>
+        <div className="legend-item">
+          <div className="dot" style={{ backgroundColor: "gray" }}></div>
+          <span>Closed</span>
+        </div>
+        <div className="legend-item">
+          <div className="dot" style={{ backgroundColor: "#788EB9" }}></div>
+          <span>Booked</span>
+        </div>
+      </div>
     </div>
   );
 };

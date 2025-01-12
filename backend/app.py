@@ -10,7 +10,7 @@ def login():
     
     account = Account.query.filter_by(email=email, password=password).first()
     if account:
-        return jsonify({"message": "Login successful", "idEmployee": account.idAccount}), 200
+        return jsonify({"message": "Login successful", "idEmployee": account.idAccount, "role": account.role}), 200
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 

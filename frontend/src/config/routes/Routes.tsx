@@ -5,4 +5,5 @@ export const enum RoutesPathList{
     BookDesk = '/bookdesk',
     Bookings = '/booking',
     ChooseDesk = '/search',
+    HomePage = '/homepage',
 }
