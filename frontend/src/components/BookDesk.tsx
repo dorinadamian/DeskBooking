@@ -1,24 +1,97 @@
 import React, { useState, useEffect } from "react";
-import { fetchCountries, fetchLocations } from "../utils/api";
+import { fetchCountries, fetchLocations, checkBookingOverlap, fetchLocationId, fetchReservations, updateBooking, deleteBooking } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 const BookDesk: React.FC = () => {
   const navigate = useNavigate();
   const [countries, setCountries] = useState<string[]>([]);
-  const [locations, setLocations] = useState<{ [key: string]: string[] }>({});
+  const [cities, setCities] = useState<{ [key: string]: string[] }>({});
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>({ from: "", to: "" });
   const [showTimePicker, setShowTimePicker] = useState(true);
   const [warningMessage, setWarningMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
-  const [tooltipMessage, setTooltipMessage] = useState("");
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [overlap, setOverlap] = useState<{ overlap: boolean, booking: any } | null>(null);
+  const [showButtons, setShowButtons] = useState(true);
+  const [showProgressBar, setShowProgressBar] = useState(true);
+  const [popupType, setPopupType] = useState<"warning" | "success">("warning");
 
-  const handlePath = () => {
-    navigate('/search'); // Navighează către "/search"
+  useEffect(() => {
+    if (selectedDate) {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const nowDateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`; // Formatează data curentă în format YYYY-M-D
+      const isToday = selectedDate.toString() === nowDateString;
+
+      if (isToday && currentHour >= 18) {
+        setShowTimePicker(false);
+        setWarningMessage("You can no longer book a desk for today.");
+        setPopupType("warning");
+        setShowPopup(true);
+        setSelectedDate(null);
+      } else {
+        setShowTimePicker(true);
+        setWarningMessage("");
+        setShowPopup(false);
+      }
+    }
+  }, [selectedDate]);
+
+  useEffect(() => {
+    if (showPopup && !showButtons) {
+      setIsButtonDisabled(true);
+      setShowProgressBar(true); // Afișează bara de progres când butoanele nu sunt vizibile
+      const timer = setTimeout(() => {
+        setShowPopup(false);
+        setIsButtonDisabled(false);
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    } else if (showButtons) {
+      setShowProgressBar(false); 
+    }
+  }, [showPopup, selectedTime, showButtons]);
+
+  const handlePath = async () => {
+    const idEmployee = localStorage.getItem('idEmployee');
+    if (idEmployee && selectedDate && selectedTime.from && selectedTime.to) {
+      const locationId = await fetchLocationId(selectedCountry, selectedCity);
+      if (locationId) {
+        const overlap = await checkBookingOverlap(Number(idEmployee), selectedDate, selectedTime.from, selectedTime.to, locationId);
+        if (overlap.overlap) {
+          setOverlap(overlap);
+          setWarningMessage(`You already have a booking from ${overlap.booking.startTime} to ${overlap.booking.endTime} at ${overlap.booking.location}, ${overlap.booking.country}.`);
+          setPopupType("warning");
+          setShowButtons(true);
+          setShowPopup(true);
+          return;
+        }
+      }
+    }
+    setShowButtons(false); // Setează `showButtons` la `false` pentru alte popup-uri
+    navigate('/search', { state: { selectedDate, selectedTime, selectedCountry, selectedCity } });
+  };
+
+  const handleYesClick = async () => {
+    if (overlap && overlap.booking) {
+      await deleteBooking(overlap.booking.id);
+      setShowPopup(false);
+      navigate('/search', { state: { selectedDate, selectedTime, selectedCountry, selectedCity } });
+    }
+  };
+
+  const handleNoClick = () => {
+    setShowPopup(false);
+  };
+
+  const isWeekday = (date: Date) => {
+    const day = date.getDay();
+    return day !== 0 && day !== 6; // 0 = Sunday, 6 = Saturday
   };
 
   useEffect(() => {
@@ -27,8 +100,8 @@ const BookDesk: React.FC = () => {
         const countries = await fetchCountries();
         setCountries(countries);
 
-        const locationsByCountry = await fetchLocations();
-        setLocations(locationsByCountry);
+        const citiesByCountry = await fetchLocations();
+        setCities(citiesByCountry);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -98,16 +171,14 @@ const BookDesk: React.FC = () => {
   };
    
   const Calendar = () => {
-    const currentDate = new Date(); // Data curentă
-    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Numărul de zile din lună
-    let firstDay = new Date(year, month, 1).getDay(); // Prima zi a lunii (0 = Duminică, 1 = Luni, etc.)
-
-    // Ajustare pentru 1 ianuarie 2025
+    const currentDate = new Date(); 
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); 
+    let firstDay = new Date(year, month, 1).getDay(); 
+    
     if (year === 2025 && month === 0) {
-      firstDay = 3; // 3 corespunde zilei de miercuri
+      firstDay = 3; 
     }
 
-    // Dacă prima zi este 0 (Duminică), mutăm la 7 pentru a începe cu Luni
     if (firstDay === 0) {
       firstDay = 7;
     }
@@ -160,6 +231,7 @@ const BookDesk: React.FC = () => {
           ))}
           {Array.from({ length: daysInMonth }, (_, i) => {
             const day = i + 1;
+            const date = new Date(year, month, day);
             const isPast =
               year < currentDate.getFullYear() ||
               (year === currentDate.getFullYear() &&
@@ -167,13 +239,14 @@ const BookDesk: React.FC = () => {
               (year === currentDate.getFullYear() &&
                 month === currentDate.getMonth() &&
                 day < currentDate.getDate());
+
+                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+
             return (
               <div
                 key={i}
-                className={`calendar-day ${isPast ? "inactive" : ""} ${
-                  selectedDate === `${year}-${month + 1}-${day}`
-                    ? "selected"
-                    : ""
+                className={`calendar-day ${isPast || isWeekend ? "inactive" : ""} ${
+                  selectedDate === `${year}-${month + 1}-${day}` ? "selected" : ""
                 }`}
                 onClick={() => handleDayClick(day, isPast)}
               >
@@ -186,37 +259,7 @@ const BookDesk: React.FC = () => {
     );
   };
 
-  useEffect(() => {
-    if (selectedDate) {
-      const now = new Date();
-      const currentHour = now.getHours();
-      const nowDateString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`; // Formatează data curentă în format YYYY-M-D
-      const isToday = selectedDate.toString() === nowDateString;
-
-      if (isToday && currentHour >= 18) {
-        setShowTimePicker(false);
-        setWarningMessage("You can no longer book a desk for today.");
-        setShowPopup(true);
-        setSelectedDate(null);
-      } else {
-        setShowTimePicker(true);
-        setWarningMessage("");
-        setShowPopup(false);
-      }
-    }
-  }, [selectedDate, warningMessage, showTimePicker]);
-
-  useEffect(() => {
-    if (showPopup) {
-      const timer = setTimeout(() => {
-        setShowPopup(false);
-      }, 4000); // Dispare după 4 secunde
-      return () => clearTimeout(timer);
-    }
-  }, [showPopup]);
-
   const TimePicker = ({ selectedDate }: { selectedDate: Date }) => {
-    const [selectedTime, setSelectedTime] = useState<{ from: string; to: string }>({ from: "", to: "" });
     const [availableFromHours, setAvailableFromHours] = useState<string[]>([]);
     const [availableToHours, setAvailableToHours] = useState<string[]>([]);
     const [tooltipMessage, setTooltipMessage] = useState<string>("");
@@ -233,7 +276,6 @@ const BookDesk: React.FC = () => {
       } else {
         fromHours = Array.from({ length: 11 }, (_, i) => `${8 + i}:00`);
       }
-  
       setAvailableFromHours(fromHours);
     }, [selectedDate]);
   
@@ -247,12 +289,12 @@ const BookDesk: React.FC = () => {
       }
     }, [selectedTime.from]);
   
-    const isButtonDisabled = !selectedTime.from || !selectedTime.to || !selectedCountry || !selectedLocation;
+    setIsButtonDisabled(!selectedTime.from || !selectedTime.to || !selectedCountry || !selectedCity);
   
     const handleMouseEnter = () => {
-      if ((!selectedCountry || !selectedLocation) && (!selectedTime.from || !selectedTime.to)) {
+      if ((!selectedCountry || !selectedCity) && (!selectedTime.from || !selectedTime.to)) {
         setTooltipMessage("You must select a location and a time slot first");
-      } else if (!selectedCountry && !selectedLocation) {
+      } else if (!selectedCountry && !selectedCity) {
         setTooltipMessage("You must select a location");
       } else if (!selectedTime.from || !selectedTime.to) {
         setTooltipMessage("You must select a time slot");
@@ -273,8 +315,10 @@ const BookDesk: React.FC = () => {
           From:
           <select
             value={selectedTime.from}
-            onChange={(e) =>
-              setSelectedTime({ ...selectedTime, from: e.target.value })
+            onChange={(e) => {
+                setSelectedTime({ ...selectedTime, from: e.target.value })
+                localStorage.setItem('selectedStartTime', selectedTime.from);
+              }
             }
           >
             <option value="">Select time</option>
@@ -287,8 +331,10 @@ const BookDesk: React.FC = () => {
           To:
           <select
             value={selectedTime.to}
-            onChange={(e) =>
-              setSelectedTime({ ...selectedTime, to: e.target.value })
+            onChange={(e) =>{
+                setSelectedTime({ ...selectedTime, to: e.target.value })
+                localStorage.setItem('selectedEndTime', selectedTime.to);
+              } 
             }
           >
             <option value="">Select time</option>
@@ -334,16 +380,20 @@ const BookDesk: React.FC = () => {
                   selectedOption={selectedCountry}
                   onOptionSelect={(country) => {
                     setSelectedCountry(country);
-                    setSelectedLocation(""); // Reset location when country changes
+                    setSelectedCity(""); 
+                    localStorage.setItem('selectedCountry', country); 
                   }}
                 />
               </div>
               <div className="bookDesk__type">
-                <div className="name">Location</div>
+                <div className="name">City</div>
                 <Dropdown
-                  options={locations[selectedCountry] || []}
-                  selectedOption={selectedLocation}
-                  onOptionSelect={setSelectedLocation}
+                  options={cities[selectedCountry] || []}
+                  selectedOption={selectedCity}
+                  onOptionSelect={(city) => {
+                    setSelectedCity(city);
+                    localStorage.setItem('selectedCity', city); 
+                  }}
                   disabled={!selectedCountry}
                 />
               </div>
@@ -359,10 +409,20 @@ const BookDesk: React.FC = () => {
               </div>
             )}
             {showPopup && (
-              <div className="popup">
-                <p>{warningMessage}</p>
-                <div className="progress-bar">
-                  <div className="progress"></div>
+              <div className="bookdesk-popup-overlay">
+                <div className="bookdesk-popup-content">
+                  <p>{warningMessage} <br></br>Do you want to delete it and continue?</p>
+                  {showButtons && (
+                    <div className="bookdesk-popup-buttons">
+                      <button className="yes-button" onClick={handleYesClick}>Yes</button>
+                      <button className="no-button" onClick={handleNoClick}>No</button>
+                    </div>
+                  )}
+                  {showProgressBar && (
+                    <div className="progress-bar">
+                      <div className="progress"></div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

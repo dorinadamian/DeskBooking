@@ -59,7 +59,7 @@ class Desk(db.Model):
     __tablename__ = 'tblDesk'
     idDesk = db.Column(db.Integer, primary_key=True)
     deskNumber = db.Column(db.Integer, nullable=False)
-    availability = db.Column(db.Enum('Free', 'Busy'), nullable=False)
+    # availability = db.Column(db.Enum('Free', 'Busy'), nullable=False)
     location = db.Column(db.Integer, db.ForeignKey('tblLocation.idLocation', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
 
     # One-to-Many: Desk -> Bookings

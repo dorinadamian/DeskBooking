@@ -49,3 +49,24 @@ def delete_employee(id):
     db.session.delete(employee)
     db.session.commit()
     return jsonify({'message': 'Employee deleted'})
+
+# Get employee details
+@app.route('/employees/<int:employee_id>/details', methods=['GET'])
+def get_employee_details(employee_id):
+    employee = db.session.query(Employee, Department).join(Department, Employee.department == Department.idDepartment).filter(Employee.idEmployee == employee_id).first()
+
+    if employee:
+        manager = db.session.query(Employee).filter(Employee.department == employee.Employee.department, Employee.role == 'Manager').first()
+        manager_name = f"{manager.firstName} {manager.lastName}" if manager else "No manager found"
+
+        employee_data = {
+            'id': employee.Employee.idEmployee,
+            'firstName': employee.Employee.firstName,
+            'lastName': employee.Employee.lastName,
+            'role': employee.Employee.role,
+            'department': employee.Department.department,
+            'manager': manager_name
+        }
+        return jsonify(employee_data)
+    else:
+        return jsonify({'error': 'Employee not found'}), 404

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { fetchBookingsByEmployee } from '../utils/api';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ const Navbar: React.FC = () => {
   const [path, setPath] = useState(1);
 
   useEffect(() => {
-    if (location.pathname === "/today") {
+    if (location.pathname === "/today" || location.pathname === "/homepage") {
       setPath(1);
     } else if (location.pathname === "/booking") {
       setPath(2);
@@ -16,7 +17,31 @@ const Navbar: React.FC = () => {
     }
   }, [location.pathname]);
 
-  const handlePath = (selectedPath: number, location: string) => {
+  const handlePath = async (selectedPath: number, location: string) => {
+    if (location === "today") {
+      console.log("today");
+      const idEmployee = localStorage.getItem('idEmployee');
+      if (idEmployee) {
+        const bookings = await fetchBookingsByEmployee(Number(idEmployee));
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        const today = `${day}/${month}/${year}`;
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+
+        const hasBookingToday = bookings.some((booking: any) => {
+          const [endHour, endMinute] = booking.to.split(':').map(Number);
+          const bookingEndTime = endHour * 60 + endMinute;
+          return booking.date === today && bookingEndTime > currentTime;
+        });
+
+        if (hasBookingToday) {
+          navigate('/homepage');
+          return;
+        }
+      }
+    }
     setPath(selectedPath);
     navigate(`/${location}`);
   };

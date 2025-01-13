@@ -47,3 +47,16 @@ def delete_location(id):
 def get_countries():
     countries = db.session.query(Location.country).distinct().all()
     return jsonify([country[0] for country in countries])
+
+# Get location ID by country and city
+@app.route('/locations/id', methods=['GET'])
+def get_location_id():
+    country = request.args.get('country')
+    city = request.args.get('city')
+    location = Location.query.filter_by(country=country, city=city).first()
+    if location:
+        return jsonify({"idLocation": location.idLocation})
+    else:
+        return jsonify({"message": "Location not found",
+                        "country": country,
+                        "city": city}), 404

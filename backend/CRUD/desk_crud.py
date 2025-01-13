@@ -40,3 +40,9 @@ def delete_desk(id):
     db.session.delete(desk)
     db.session.commit()
     return jsonify({'message': 'Desk deleted'})
+
+# Get desks by location
+@app.route('/desks/location/<int:location_id>', methods=['GET'])
+def get_desks_by_location(location_id):
+    desks = Desk.query.filter_by(location=location_id).order_by(Desk.deskNumber.asc()).all()
+    return jsonify(desks_schema.dump(desks))

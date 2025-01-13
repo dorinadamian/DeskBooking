@@ -3,7 +3,7 @@ import foto from "../assets/image 1.png";
 import foto1 from "../assets/image 2.png";
 import logo from "../assets/MyDeskHub 1.png";
 import { useNavigate } from "react-router-dom";
-import { login } from '../utils/api';
+import { login, fetchBookingsByEmployee } from '../utils/api';
 
 const Landing: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -23,9 +23,28 @@ const Landing: React.FC = () => {
     }
 
     try {
-      const { idEmployee } = await login(email, password);
+      const { idEmployee, role } = await login(email, password);
       localStorage.setItem('idEmployee', idEmployee);
-      navigate('/today');
+
+      const bookings = await fetchBookingsByEmployee(Number(idEmployee));
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const today = `${day}/${month}/${year}`;
+      const currentTime = now.getHours() * 60 + now.getMinutes();
+      
+      const hasBookingToday = bookings.some((booking: any) => {
+        const [endHour, endMinute] = booking.to.split(':').map(Number);
+        const bookingEndTime = endHour * 60 + endMinute;
+        return booking.date === today && bookingEndTime > currentTime;
+      });
+
+      if (hasBookingToday) {
+        navigate('/homepage');
+      } else {
+        navigate('/today');
+      }
     } catch (error) {
       setError((error as any).message);
     }
@@ -74,7 +93,7 @@ const Landing: React.FC = () => {
               </div>
               </form>
               {error && <div className="error-message">{error}</div>}
-              <a href="#" className="forgot-password">
+              <a href="#" className="forgot-password" onClick={() => navigate('/reset-password')}>
                 Forgot password?
               </a>
               <button onClick={handleNavigate} className="login-btn">

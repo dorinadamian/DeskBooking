@@ -6,6 +6,8 @@ import "./css/index.css";
 import BookDesk from './components/BookDesk';
 import Bookings from './components/Bookings';
 import ChooseDesk from './components/ChooseDesk';
+import ResetPassword from './pages/ResetPassword';
+import HomePage2 from './components/HomePage2';
 
 const App = () => {
   return (
@@ -16,6 +18,8 @@ const App = () => {
         <Route path='/bookdesk' element={<BookDesk/>}/>
         <Route path='/booking' element={<Bookings/>}/>
         <Route path='/search' element={<ChooseDesk/>}/>
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path='/homepage' element={<HomePage2/>}/>
       </Routes>
     </Layout>
   )
