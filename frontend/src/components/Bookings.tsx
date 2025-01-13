@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { fetchBookingsByEmployee, fetchDesksByLocation, fetchReservations, fetchLocationId, updateBooking, deleteBooking } from "../utils/api";
 
 const Bookings: React.FC = () => {
@@ -10,6 +10,7 @@ const Bookings: React.FC = () => {
   const [selectedDesk, setSelectedDesk] = useState<number | null>(null);
   const [currentBooking, setCurrentBooking] = useState<any>(null);
   const [bookingToDelete, setBookingToDelete] = useState<any>(null);
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -66,6 +67,7 @@ const Bookings: React.FC = () => {
           setBookings(bookings);
         }
         // Show success popup
+        setSuccessMessage("Booking updated successfully!");
         setShowSuccessPopup(true);
         setTimeout(() => {
           setShowSuccessPopup(false);
@@ -91,6 +93,7 @@ const Bookings: React.FC = () => {
         setBookings(bookings);
       }
       // Show success popup
+      setSuccessMessage("Booking deleted successfully!");
       setShowSuccessPopup(true);
       setTimeout(() => {
         setShowSuccessPopup(false);
@@ -197,7 +200,7 @@ const Bookings: React.FC = () => {
       {showSuccessPopup && (
         <div className="bookings-success-popup">
           <div className="bookings-success-popup-content">
-            <p>Booking deleted successfully!</p>
+            <p>{successMessage}</p>
             <div className="progress-bar">
               <div className="progress"></div>
             </div>
