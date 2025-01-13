@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchBookingsByEmployee, fetchLocationId, fetchDesksByLocation, fetchReservations, updateBooking, deleteBooking } from "../utils/api";
+import { fetchBookingsByEmployee, fetchDesksByLocation, fetchReservations, fetchLocationId, updateBooking, deleteBooking } from "../utils/api";
 
 const Bookings: React.FC = () => {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -10,6 +10,7 @@ const Bookings: React.FC = () => {
   const [selectedDesk, setSelectedDesk] = useState<number | null>(null);
   const [currentBooking, setCurrentBooking] = useState<any>(null);
   const [bookingToDelete, setBookingToDelete] = useState<any>(null);
+  const [successMessage, setSuccessMessage] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const bookingsPerPage = 5;
 
@@ -65,6 +66,8 @@ const Bookings: React.FC = () => {
           const bookings = await fetchBookingsByEmployee(Number(idEmployee));
           setBookings(bookings);
         }
+        // Show success popup
+        setSuccessMessage("Booking updated successfully!");
         setShowSuccessPopup(true);
         setTimeout(() => {
           setShowSuccessPopup(false);
@@ -89,6 +92,8 @@ const Bookings: React.FC = () => {
         const bookings = await fetchBookingsByEmployee(Number(idEmployee));
         setBookings(bookings);
       }
+      // Show success popup
+      setSuccessMessage("Booking deleted successfully!");
       setShowSuccessPopup(true);
       setTimeout(() => {
         setShowSuccessPopup(false);
@@ -215,7 +220,7 @@ const Bookings: React.FC = () => {
       {showSuccessPopup && (
         <div className="bookings-success-popup">
           <div className="bookings-success-popup-content">
-            <p>Booking updated successfully!</p>
+            <p>{successMessage}</p>
             <div className="progress-bar">
               <div className="progress"></div>
             </div>
